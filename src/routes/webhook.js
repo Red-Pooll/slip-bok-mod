@@ -15,7 +15,8 @@ const client = new Client(lineConfig);
 router.post('/', middleware(lineConfig), async (req, res) => {
   res.sendStatus(200);
 
-  const events = req.body.events;
+  const events = req.body?.events;
+  if (!events || events.length === 0) return;
   await Promise.all(events.map((event) => handleEvent(client, event)));
 });
 

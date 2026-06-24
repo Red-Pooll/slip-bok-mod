@@ -6,9 +6,11 @@ require('./jobs/weeklyReport');
 
 const app = express();
 
-app.use('/webhook', express.raw({ type: 'application/json' }), webhookRouter);
+app.use('/webhook', webhookRouter);
 app.use('/health', express.json(), healthRouter);
 
-app.listen(config.port, () => {
-  console.log(`สลิปบอกหมด running on port ${config.port}`);
+const PORT = config.port;
+app.listen(PORT, () => {
+  console.log(`[startup] สลิปบอกหมด running on port ${PORT}`);
+  console.log(`[startup] NODE_ENV=${config.nodeEnv}`);
 });
