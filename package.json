@@ -9,7 +9,7 @@
     "lint": "eslint src/**/*.js"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@google-cloud/vision": "^4.3.2",
