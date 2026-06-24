@@ -1,7 +1,12 @@
 const { createClient } = require('@supabase/supabase-js');
+const WebSocket = require('ws');
 const config = require('../config');
 
-const supabase = createClient(config.supabase.url, config.supabase.serviceRoleKey);
+const supabase = createClient(config.supabase.url, config.supabase.serviceRoleKey, {
+  realtime: {
+    transport: WebSocket,
+  },
+});
 
 async function saveTransaction(userId, data) {
   const { error } = await supabase.from('transactions').insert({
