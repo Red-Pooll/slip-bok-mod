@@ -1,6 +1,11 @@
 const vision = require('@google-cloud/vision');
 
-const visionClient = new vision.ImageAnnotatorClient();
+if (!process.env.GOOGLE_CREDENTIALS_JSON) {
+  throw new Error('[visionService] GOOGLE_CREDENTIALS_JSON environment variable is not set');
+}
+
+const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
+const visionClient = new vision.ImageAnnotatorClient({ credentials });
 
 async function extractTextFromImage(imageBuffer) {
   const [result] = await visionClient.textDetection({ image: { content: imageBuffer } });
