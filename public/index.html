@@ -167,7 +167,7 @@
       background: var(--surface-2);
     }
     .chat-av {
-      width: 30px; height: 30px;
+      width: 40px; height: 40px;
       border-radius: 50%;
       background: var(--mint-sub);
       border: 1px solid var(--mint-border);
@@ -175,7 +175,22 @@
       font-size: 12px; font-weight: 700;
       color: var(--mint);
       flex-shrink: 0;
+      overflow: hidden;
+      transition: background .3s, border-color .3s;
     }
+    #flying-logo {
+      position: fixed;
+      pointer-events: none;
+      z-index: 500;
+      opacity: 0;
+      overflow: hidden;
+    }
+    #flying-logo img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    .hero-logo.still { animation: none; }
     .chat-header-name { font-size: 13px; font-weight: 600; }
     .chat-header-status {
       font-size: 11px;
@@ -704,10 +719,12 @@
   <a href="#" class="nav-cta">เพิ่มเพื่อน LINE</a>
 </nav>
 
+<div id="flying-logo"><img src="logo.png" alt=""></div>
+
 <!-- ── HERO ── -->
 <section id="hero">
   <div class="hero-body">
-    <img src="logo.png" alt="สลิปบอกหมด" class="hero-logo" />
+    <img src="logo.png" alt="สลิปบอกหมด" class="hero-logo" id="hero-logo-static" />
     <h1>รู้ว่าเงินหายไปไหน<br><em>แค่ส่งสลิป</em></h1>
     <p>LINE Bot อ่านสลิปและจัดหมวดหมู่ให้อัตโนมัติ ฟรี</p>
     <a href="#" class="btn-cta">เพิ่มเพื่อน LINE →</a>
@@ -734,7 +751,7 @@
 
       <div class="chat-window reveal delay-2" id="chat-window">
         <div class="chat-header">
-          <div class="chat-av">ส</div>
+          <div class="chat-av" id="chat-av-target">ส</div>
           <div>
             <div class="chat-header-name">สลิปบอกหมด</div>
             <div class="chat-header-status"><span class="status-dot"></span>Official Account</div>
@@ -933,6 +950,75 @@
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
+
+  /* ── FLYING LOGO ── */
+  const heroStatic   = document.getElementById('hero-logo-static');
+  const flyingLogo   = document.getElementById('flying-logo');
+  const chatAvTarget = document.getElementById('chat-av-target');
+  const heroEl       = document.getElementById('hero');
+  const chatEl       = document.getElementById('chat-section');
+
+  let smoothP = 0;
+  let landed  = false;
+
+  function getRawP() {
+    const heroH   = heroEl.offsetHeight;
+    const heroTop = heroEl.offsetTop;
+    const chatTop = chatEl.offsetTop;
+    const start   = heroTop + heroH * 0.25;
+    const end     = chatTop - window.innerHeight * 0.35;
+    return Math.max(0, Math.min(1, (window.scrollY - start) / Math.max(1, end - start)));
+  }
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function flyFrame() {
+    const rawP = getRawP();
+    smoothP += (rawP - smoothP) * 0.1;
+
+    if (rawP <= 0.01 && smoothP <= 0.02) {
+      heroStatic.style.opacity = '1';
+      heroStatic.classList.remove('still');
+      flyingLogo.style.opacity = '0';
+      requestAnimationFrame(flyFrame);
+      return;
+    }
+
+    heroStatic.style.opacity = '0';
+    heroStatic.classList.add('still');
+
+    if (smoothP >= 0.98 && !landed) {
+      landed = true;
+      flyingLogo.style.opacity = '0';
+      chatAvTarget.style.background   = 'transparent';
+      chatAvTarget.style.borderColor  = 'transparent';
+      chatAvTarget.style.color        = 'transparent';
+      chatAvTarget.innerHTML = '<img src="logo.png" alt="" style="width:100%;height:100%;object-fit:contain;">';
+    }
+
+    if (!landed) {
+      const size      = lerp(200, 40, smoothP);
+      const glow      = lerp(30, 0, smoothP);
+      const glowAlpha = lerp(0.8, 0, smoothP);
+      const radius    = lerp(10, 50, smoothP);
+
+      const av = chatAvTarget.getBoundingClientRect();
+      const x  = lerp(window.innerWidth  / 2, av.left + av.width  / 2, smoothP);
+      const y  = lerp(window.innerHeight / 2, av.top  + av.height / 2, smoothP);
+
+      flyingLogo.style.opacity      = '1';
+      flyingLogo.style.width        = size + 'px';
+      flyingLogo.style.height       = size + 'px';
+      flyingLogo.style.left         = (x - size / 2) + 'px';
+      flyingLogo.style.top          = (y - size / 2) + 'px';
+      flyingLogo.style.borderRadius = radius + '%';
+      flyingLogo.style.filter       = `drop-shadow(0 0 ${glow}px rgba(125,212,180,${glowAlpha}))`;
+    }
+
+    requestAnimationFrame(flyFrame);
+  }
+
+  flyFrame();
 
   /* ── SCROLL REVEAL ── */
   const reveals = document.querySelectorAll('.reveal');
