@@ -62,7 +62,14 @@
       text-decoration: none;
       letter-spacing: -0.01em;
     }
-    .nav-logo img { border-radius: 6px; display: block; }
+    .nav-logo img {
+      height: 28px;
+      width: auto;
+      object-fit: contain;
+      vertical-align: middle;
+      display: block;
+      flex-shrink: 0;
+    }
     .nav-logo span { color: var(--mint); }
     .nav-links {
       display: flex;
@@ -765,8 +772,7 @@
 <!-- NAV -->
 <nav class="nav" id="nav">
   <a href="/" class="nav-logo">
-    <img src="logo.png" width="32" height="32" alt="">
-    สลิป<span>บอกหมด</span>
+    <img src="logo.png" alt="สลิปบอกหมด">สลิป<span>บอกหมด</span>
   </a>
   <div class="nav-links">
     <a href="#features" class="nav-link">ฟีเจอร์</a>
