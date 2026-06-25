@@ -74,101 +74,10 @@
     }
     .nav-cta:hover { opacity: .85; }
 
-    /* ── VIDEO SECTION ── */
-    #video-section {
-      position: relative;
-      height: 500vh;
-    }
-    .video-sticky {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: hidden;
-      background: #000;
-    }
-    #hero-video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      pointer-events: none;
-    }
-    .video-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.3);
-      pointer-events: none;
-    }
-    #video-fade-out {
-      position: absolute;
-      inset: 0;
-      background: #0a0a0a;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 5;
-    }
-    .video-headline {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 24px;
-      transition: opacity .1s;
-    }
-    .video-headline h1 {
-      font-size: clamp(48px, 8vw, 96px);
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1.05;
-      color: #fff;
-    }
-    .video-headline h1 em {
-      font-style: normal;
-      color: var(--mint);
-    }
-    .video-headline p {
-      margin-top: 20px;
-      font-size: 17px;
-      color: rgba(255,255,255,0.55);
-      font-weight: 400;
-      letter-spacing: -0.01em;
-    }
-    .scroll-hint {
-      position: absolute;
-      bottom: 36px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      color: rgba(255,255,255,0.3);
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      transition: opacity .2s;
-    }
-    .scroll-hint-line {
-      width: 1px;
-      height: 40px;
-      background: rgba(255,255,255,0.15);
-      animation: scroll-line 1.8s ease-in-out infinite;
-    }
-    @keyframes scroll-line {
-      0%   { transform: scaleY(0); transform-origin: top; }
-      50%  { transform: scaleY(1); transform-origin: top; }
-      51%  { transform: scaleY(1); transform-origin: bottom; }
-      100% { transform: scaleY(0); transform-origin: bottom; }
-    }
-    .video-fallback {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(160deg, #0d1a14 0%, #0a0a0a 60%);
+    /* ── HERO LOGO ANIMATION ── */
+    @keyframes float {
+      0%, 100% { transform: translateY(-15px); }
+      50%       { transform: translateY(0); }
     }
 
     /* ── CONTAINER ── */
@@ -751,14 +660,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+      gap: 28px;
     }
-    .hero-body.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .hero-logo {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(125, 212, 180, 0.8));
     }
     .hero-body h1 {
       font-size: clamp(44px, 7vw, 88px);
@@ -795,36 +704,10 @@
   <a href="#" class="nav-cta">เพิ่มเพื่อน LINE</a>
 </nav>
 
-<!-- ── VIDEO SECTION ── -->
-<section id="video-section">
-  <div class="video-sticky" id="video-sticky">
-    <div class="video-fallback"></div>
-    <video
-      id="hero-video"
-      src="hero.mp4"
-      muted
-      playsinline
-      preload="auto"
-    ></video>
-    <div class="video-overlay"></div>
-    <div id="video-fade-out"></div>
-
-    <div class="video-headline" id="video-headline">
-      <h1>รู้ว่าเงินหายไปไหน<br><em>แค่ส่งสลิป</em></h1>
-      <p>LINE Bot อ่านสลิปและจัดหมวดหมู่ให้อัตโนมัติ ฟรี</p>
-    </div>
-
-    <div class="scroll-hint" id="scroll-hint">
-      <span>scroll</span>
-      <div class="scroll-hint-line"></div>
-    </div>
-  </div>
-</section>
-
 <!-- ── HERO ── -->
 <section id="hero">
-  <div class="hero-body" id="hero-body">
-    <img src="logo.png" alt="สลิปบอกหมด" width="80" height="80" style="border-radius:20px;" />
+  <div class="hero-body">
+    <img src="logo.png" alt="สลิปบอกหมด" class="hero-logo" />
     <h1>รู้ว่าเงินหายไปไหน<br><em>แค่ส่งสลิป</em></h1>
     <p>LINE Bot อ่านสลิปและจัดหมวดหมู่ให้อัตโนมัติ ฟรี</p>
     <a href="#" class="btn-cta">เพิ่มเพื่อน LINE →</a>
@@ -1050,51 +933,6 @@
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
-
-  /* ── VIDEO SCRUB (rAF + lerp) ── */
-  const videoSection = document.getElementById('video-section');
-  const video        = document.getElementById('hero-video');
-  const headline     = document.getElementById('video-headline');
-  const scrollHint   = document.getElementById('scroll-hint');
-  const videoFadeOut = document.getElementById('video-fade-out');
-
-  let targetTime = 0;
-  let smoothTime = 0;
-
-  video.addEventListener('loadedmetadata', () => {
-    video.pause();
-    video.currentTime = 0;
-  });
-
-  function getVideoProgress() {
-    const rect = videoSection.getBoundingClientRect();
-    const h    = videoSection.offsetHeight - window.innerHeight;
-    return Math.min(1, Math.max(0, -rect.top) / h);
-  }
-
-  function rafLoop() {
-    const vp = getVideoProgress();
-
-    if (video.readyState >= 2 && video.duration) {
-      targetTime = vp * video.duration;
-      smoothTime += (targetTime - smoothTime) * 0.1;
-      video.currentTime = smoothTime;
-    }
-
-    headline.style.opacity     = Math.max(0, 1 - vp / 0.15);
-    scrollHint.style.opacity   = Math.max(0, 1 - vp / 0.08);
-    videoFadeOut.style.opacity = Math.max(0, (vp - 0.9) / 0.1);
-
-    requestAnimationFrame(rafLoop);
-  }
-
-  rafLoop();
-
-  /* ── HERO fade-in ── */
-  const heroBody = document.getElementById('hero-body');
-  new IntersectionObserver(([e]) => {
-    if (e.isIntersecting) heroBody.classList.add('visible');
-  }, { threshold: 0.2 }).observe(heroBody);
 
   /* ── SCROLL REVEAL ── */
   const reveals = document.querySelectorAll('.reveal');
