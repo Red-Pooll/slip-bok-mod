@@ -665,11 +665,13 @@
     #hero {
       min-height: 100vh;
       background: #0a0a0a;
+      background-image: radial-gradient(ellipse at center, rgba(125,212,180,0.08) 0%, transparent 70%);
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 80px 24px;
+      padding: 80px 24px 60px;
     }
     .hero-body {
       display: flex;
@@ -678,14 +680,14 @@
       gap: 28px;
     }
     .hero-logo {
-      width: 200px;
-      height: 200px;
+      width: 280px;
+      height: 280px;
       object-fit: contain;
       animation: float 3s ease-in-out infinite;
       filter: drop-shadow(0 0 30px rgba(125, 212, 180, 0.8));
     }
     .hero-body h1 {
-      font-size: clamp(44px, 7vw, 88px);
+      font-size: clamp(44px, 6vw, 72px);
       font-weight: 800;
       letter-spacing: -0.04em;
       line-height: 1.06;
@@ -696,6 +698,35 @@
       color: var(--text-2);
       max-width: 420px;
       line-height: 1.7;
+    }
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--mint);
+      font-weight: 500;
+      margin-top: -8px;
+    }
+    .hero-stats .dot { color: var(--text-3); }
+    .hero-scroll {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-3);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .hero-arrow {
+      font-size: 18px;
+      animation: bounce-arrow 1.6s ease-in-out infinite;
+    }
+    @keyframes bounce-arrow {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(6px); }
     }
 
     /* ── SCROLL REVEAL ── */
@@ -728,6 +759,16 @@
     <h1>รู้ว่าเงินหายไปไหน<br><em>แค่ส่งสลิป</em></h1>
     <p>LINE Bot อ่านสลิปและจัดหมวดหมู่ให้อัตโนมัติ ฟรี</p>
     <a href="#" class="btn-cta">เพิ่มเพื่อน LINE →</a>
+    <div class="hero-stats">
+      <span>1,000+ ผู้ใช้</span>
+      <span class="dot">·</span>
+      <span>50,000+ สลิป</span>
+      <span class="dot">·</span>
+      <span>ฟรี 100%</span>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-arrow">↓</div>
   </div>
 </section>
 
