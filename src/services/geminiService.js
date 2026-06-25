@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const config = require('../config');
 
-const genAI = new GoogleGenerativeAI(config.gemini.apiKey);
+const genAI = new GoogleGenerativeAI(config.gemini.apiKey, { apiVersion: 'v1' });
 const model = genAI.getGenerativeModel({ model: config.gemini.model });
 
 const CATEGORIES = [
