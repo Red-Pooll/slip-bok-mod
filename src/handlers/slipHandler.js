@@ -24,7 +24,7 @@ async function handleSlipImage(client, event) {
   }
 
   const parsed = parseSlipText(rawText);
-  if (!parsed.amount) {
+  if (parsed.amount == null || parsed.amount <= 0) {
     await lineService.replyText(replyToken, formatParseError());
     return;
   }
