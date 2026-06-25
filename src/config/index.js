@@ -7,7 +7,7 @@ module.exports = {
   },
   gemini: {
     apiKey: process.env.GEMINI_API_KEY,
-    model: 'gemini-2.0-flash',
+    model: 'gemini-1.5-flash',
   },
   supabase: {
     url: process.env.SUPABASE_URL,
