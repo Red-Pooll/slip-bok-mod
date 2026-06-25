@@ -202,6 +202,318 @@
       margin-bottom: 72px;
     }
 
+    /* ─── CHAT DEMO ─── */
+    #chat-demo { padding: 120px 0; border-top: 1px solid var(--border); }
+    .demo-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 80px;
+      align-items: center;
+    }
+    @media (max-width: 900px) {
+      .demo-layout { grid-template-columns: 1fr; }
+      .demo-phone-col { display: flex; justify-content: center; }
+    }
+    .demo-copy h2 {
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+    .demo-copy p {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.75;
+      max-width: 360px;
+      margin-bottom: 32px;
+    }
+    .demo-feats {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+    .demo-feats li {
+      font-size: 14px;
+      color: #666;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .demo-feats li .df-check { color: var(--accent); font-weight: 700; }
+
+    /* Phone shell */
+    .phone {
+      width: 320px;
+      border-radius: 40px;
+      background: #0e0e0e;
+      border: 1.5px solid #2a2a2a;
+      box-shadow:
+        0 0 0 1px #0a0a0a,
+        0 40px 100px rgba(0,0,0,.75),
+        inset 0 1px 0 rgba(255,255,255,.05);
+      overflow: hidden;
+      position: relative;
+    }
+    .phone-pill {
+      width: 80px; height: 24px;
+      background: #0e0e0e;
+      border-radius: 12px;
+      position: absolute;
+      top: 10px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      border: 1.5px solid #222;
+    }
+    .phone-status {
+      padding: 36px 24px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      background: #0e0e0e;
+    }
+    .ps-right { display: flex; align-items: center; gap: 5px; }
+
+    /* Topbar */
+    .phone-topbar {
+      background: #151515;
+      border-bottom: 1px solid #222;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .topbar-av {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: #222;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .topbar-av img { width: 100%; height: 100%; object-fit: contain; }
+    .topbar-name { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; }
+    .topbar-sub {
+      font-size: 11px; color: #555;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .topbar-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+    /* Chat body */
+    .chat-body-demo {
+      height: 430px;
+      overflow-y: auto;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      background: #111;
+      scroll-behavior: smooth;
+    }
+    .chat-body-demo::-webkit-scrollbar { display: none; }
+
+    /* Messages */
+    .cm {
+      display: flex;
+      gap: 7px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .35s ease, transform .35s ease;
+    }
+    .cm.show { opacity: 1; transform: none; }
+    .cm.user { justify-content: flex-end; }
+    .cm.bot  { justify-content: flex-start; }
+    .bot-av-sm {
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: #1a1a1a;
+      overflow: hidden;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .bot-av-sm img { width: 100%; height: 100%; object-fit: contain; }
+
+    .bubble {
+      max-width: 210px;
+      padding: 9px 13px;
+      border-radius: 16px;
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+    .cm.user .bubble {
+      background: #1a7a5e;
+      color: #fff;
+      border-bottom-right-radius: 3px;
+    }
+    .cm.bot .bubble {
+      background: #1e1e1e;
+      color: #ddd;
+      border-bottom-left-radius: 3px;
+    }
+
+    /* Slip card */
+    .slip-card-demo {
+      background: #fff;
+      color: #111;
+      border-radius: 12px;
+      padding: 13px 15px;
+      min-width: 180px;
+      max-width: 210px;
+    }
+    .scd-bank {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: #1a7a5e;
+      margin-bottom: 5px;
+    }
+    .scd-amount {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #111;
+      line-height: 1;
+    }
+    .scd-to { font-size: 12px; color: #666; margin-top: 4px; }
+    .scd-date {
+      font-size: 10px;
+      color: #aaa;
+      margin-top: 9px;
+      padding-top: 9px;
+      border-top: 1px solid #eee;
+    }
+
+    /* Summary card */
+    .sum-card-demo {
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      border-bottom-left-radius: 3px;
+      padding: 13px 15px;
+      min-width: 200px;
+      max-width: 220px;
+    }
+    .smd-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .smd-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      padding: 4px 0;
+      border-bottom: 1px solid #282828;
+      color: #666;
+    }
+    .smd-row:last-of-type { border-bottom: none; }
+    .smd-row .v { color: #ccc; font-weight: 600; }
+    .smd-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #fff;
+      padding-top: 9px;
+      margin-top: 5px;
+      border-top: 1px solid #333;
+    }
+
+    /* Progress card */
+    .prog-card-demo {
+      background: #1e1e1e;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      border-bottom-left-radius: 3px;
+      padding: 13px 15px;
+      min-width: 200px;
+      max-width: 220px;
+    }
+    .pcd-label { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 11px; }
+    .pcd-track { height: 5px; background: #2a2a2a; border-radius: 3px; overflow: hidden; }
+    .pcd-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 1.2s ease .2s;
+    }
+    .pcd-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10.5px;
+      color: #555;
+      margin-top: 7px;
+    }
+
+    /* Typing indicator */
+    .typing-ind {
+      display: flex;
+      gap: 7px;
+      align-items: flex-end;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .typing-ind.show { opacity: 1; }
+    .typing-bub {
+      background: #1e1e1e;
+      border-radius: 16px;
+      border-bottom-left-radius: 3px;
+      padding: 10px 13px;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .td {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #444;
+      animation: tdot .9s ease-in-out infinite;
+    }
+    .td:nth-child(2) { animation-delay: .15s; }
+    .td:nth-child(3) { animation-delay: .30s; }
+    @keyframes tdot {
+      0%,60%,100% { transform: translateY(0); background: #444; }
+      30%          { transform: translateY(-5px); background: var(--accent); }
+    }
+
+    /* Input bar */
+    .phone-inputbar {
+      background: #151515;
+      border-top: 1px solid #222;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pib-field {
+      flex: 1;
+      background: #0e0e0e;
+      border: 1px solid #2a2a2a;
+      border-radius: 20px;
+      padding: 7px 13px;
+      font-size: 12px;
+      color: #444;
+      font-family: inherit;
+    }
+    .pib-send {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pib-send svg { width: 13px; height: 13px; fill: #000; }
+
     /* ─── FEATURES ─── */
     .features-grid {
       display: grid;
@@ -529,6 +841,59 @@
   <div class="hero-scroll">↓</div>
 </section>
 
+<!-- CHAT DEMO -->
+<section id="chat-demo">
+  <div class="container">
+    <div class="demo-layout">
+
+      <div class="demo-copy reveal">
+        <span class="section-label">ดูตัวอย่าง</span>
+        <h2>ใช้งานได้เลย<br>ผ่าน LINE</h2>
+        <p>ไม่ต้องลงแอปเพิ่ม ไม่ต้องสมัครสมาชิก แค่เพิ่มเพื่อนแล้วส่งสลิปได้เลย</p>
+        <ul class="demo-feats">
+          <li><span class="df-check">✓</span>ส่งสลิป บันทึกอัตโนมัติภายใน 3 วินาที</li>
+          <li><span class="df-check">✓</span>พิมพ์ "สรุป" ดูยอดรายวัน/รายสัปดาห์</li>
+          <li><span class="df-check">✓</span>ตั้งงบรายเดือนและดู progress</li>
+          <li><span class="df-check">✓</span>รองรับทุกธนาคาร ทุกรูปแบบสลิป</li>
+        </ul>
+      </div>
+
+      <div class="demo-phone-col reveal d2">
+        <div class="phone" id="chat-phone">
+          <div class="phone-pill"></div>
+          <div class="phone-status">
+            <span>9:41</span>
+            <div class="ps-right">
+              <svg width="14" height="10" viewBox="0 0 14 10" fill="white" opacity=".9"><rect x="0" y="3" width="2.5" height="7" rx=".8"/><rect x="3.5" y="2" width="2.5" height="8" rx=".8"/><rect x="7" y="0" width="2.5" height="10" rx=".8"/><rect x="10.5" y="0" width="2.5" height="10" rx=".8" opacity=".3"/></svg>
+              <svg width="15" height="11" viewBox="0 0 15 11" fill="none" opacity=".9"><rect x=".75" y="2.75" width="11" height="7.5" rx="1.5" stroke="white" stroke-width="1.5"/><rect x="12" y="4.5" width="2" height="4" rx="1" fill="white" opacity=".5"/><rect x="1.75" y="3.75" width="7.5" height="5.5" rx=".75" fill="white"/></svg>
+            </div>
+          </div>
+          <div class="phone-topbar">
+            <div class="topbar-av"><img src="logo.png" alt=""></div>
+            <div>
+              <div class="topbar-name">สลิปบอกหมด</div>
+              <div class="topbar-sub"><span class="topbar-dot"></span>Official Account</div>
+            </div>
+          </div>
+          <div class="chat-body-demo" id="demo-body">
+            <div class="typing-ind" id="demo-typing">
+              <div class="bot-av-sm"><img src="logo.png" alt=""></div>
+              <div class="typing-bub">
+                <div class="td"></div><div class="td"></div><div class="td"></div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-inputbar">
+            <div class="pib-field" id="demo-input">ส่งรูปสลิป หรือพิมพ์คำสั่ง...</div>
+            <div class="pib-send"><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- FEATURES -->
 <section id="features" class="section">
   <div class="container">
@@ -726,6 +1091,136 @@
   }, { threshold: 0.1 });
   const priceGrid = document.querySelector('.pricing-grid');
   if (priceGrid) priceObs.observe(priceGrid);
+
+  /* ── CHAT DEMO ANIMATION ── */
+  (function () {
+    const body      = document.getElementById('demo-body');
+    const typingEl  = document.getElementById('demo-typing');
+    const inputEl   = document.getElementById('demo-input');
+    if (!body) return;
+
+    const SEQ = [
+      { role: 'user', kind: 'slip' },
+      { role: 'bot',  kind: 'text',     text: '✅ บันทึกแล้ว — กาแฟ ฿200\nวันนี้ใช้ไปรวม ฿200' },
+      { role: 'user', kind: 'text',     text: 'สรุป' },
+      { role: 'bot',  kind: 'summary' },
+      { role: 'user', kind: 'text',     text: 'งบ 3000' },
+      { role: 'bot',  kind: 'progress' },
+    ];
+
+    function slipHTML() {
+      return `<div class="slip-card-demo">
+        <div class="scd-bank">KPLUS · PromptPay</div>
+        <div class="scd-amount">฿200.00</div>
+        <div class="scd-to">กาแฟ อเมซอน สาขาสยาม</div>
+        <div class="scd-date">25 มิ.ย. 2026 · 09:41</div>
+      </div>`;
+    }
+    function summaryHTML() {
+      return `<div class="sum-card-demo">
+        <div class="smd-title">สรุปวันนี้</div>
+        <div class="smd-row"><span>อาหาร/เครื่องดื่ม</span><span class="v">฿200</span></div>
+        <div class="smd-row"><span>การเดินทาง</span><span class="v">฿0</span></div>
+        <div class="smd-row"><span>อื่นๆ</span><span class="v">฿0</span></div>
+        <div class="smd-total"><span>รวมทั้งหมด</span><span>฿200</span></div>
+      </div>`;
+    }
+    function progressHTML() {
+      return `<div class="prog-card-demo">
+        <div class="pcd-label">งบเดือนนี้ ฿3,000</div>
+        <div class="pcd-track"><div class="pcd-fill" id="pcd-fill"></div></div>
+        <div class="pcd-meta"><span>ใช้ไป ฿200</span><span>6.7% ของงบ</span></div>
+      </div>`;
+    }
+
+    function makeEl(msg) {
+      const wrap = document.createElement('div');
+      wrap.className = 'cm ' + msg.role;
+      let inner = '';
+      if (msg.role === 'bot') inner += '<div class="bot-av-sm"><img src="logo.png" alt=""></div>';
+      if      (msg.kind === 'slip')     inner += slipHTML();
+      else if (msg.kind === 'summary')  inner += summaryHTML();
+      else if (msg.kind === 'progress') inner += progressHTML();
+      else inner += `<div class="bubble">${msg.text.replace('\n','<br>')}</div>`;
+      wrap.innerHTML = inner;
+      return wrap;
+    }
+
+    function scrollBot() { body.scrollTop = body.scrollHeight; }
+
+    function showTyping(on) {
+      typingEl.classList.toggle('show', on);
+      body.appendChild(typingEl);
+      scrollBot();
+    }
+
+    function showMsg(msg, cb) {
+      const el = makeEl(msg);
+      body.insertBefore(el, typingEl);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.classList.add('show');
+        if (msg.kind === 'progress') {
+          setTimeout(() => {
+            const f = document.getElementById('pcd-fill');
+            if (f) f.style.width = '6.7%';
+          }, 300);
+        }
+        if (msg.role === 'user' && msg.kind === 'text') {
+          inputEl.textContent = msg.text;
+          setTimeout(() => { inputEl.textContent = 'ส่งรูปสลิป หรือพิมพ์คำสั่ง...'; }, 700);
+        }
+        scrollBot();
+        if (cb) setTimeout(cb, 800);
+      }));
+    }
+
+    let timers = [];
+    function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+
+    function reset() {
+      body.querySelectorAll('.cm').forEach(el => el.remove());
+      showTyping(false);
+      inputEl.textContent = 'ส่งรูปสลิป หรือพิมพ์คำสั่ง...';
+    }
+
+    function run() {
+      clearTimers();
+      reset();
+
+      /* Timeline: user → [typing 0.8s] → bot → user → [typing 0.8s] → bot → ... */
+      const BEAT = 800;   /* ms between message appearances */
+      const TYPE = 900;   /* typing indicator duration before bot reply */
+
+      let t = 400;
+      SEQ.forEach((msg) => {
+        if (msg.role === 'bot') {
+          /* show typing first */
+          timers.push(setTimeout(() => showTyping(true), t));
+          t += TYPE;
+          timers.push(setTimeout(() => { showTyping(false); showMsg(msg); }, t));
+        } else {
+          timers.push(setTimeout(() => showMsg(msg), t));
+        }
+        t += BEAT;
+      });
+
+      /* loop */
+      timers.push(setTimeout(run, 15000));
+    }
+
+    let started = false;
+    const demoObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting && !started) {
+          started = true;
+          run();
+          demoObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.25 });
+    const phone = document.getElementById('chat-phone');
+    if (phone) demoObs.observe(phone);
+  })();
 </script>
 </body>
 </html>
