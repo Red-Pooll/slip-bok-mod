@@ -737,77 +737,41 @@
     footer a { color: var(--text-3); text-decoration: none; }
     footer a:hover { color: var(--text-2); }
 
-    /* ── HERO TRANSITION ── */
-    #hero-transition {
-      position: relative;
+    /* ── HERO ── */
+    #hero {
       min-height: 100vh;
       background: #0a0a0a;
-      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-    #hero-black {
-      position: absolute;
-      inset: 0;
-      background: #0a0a0a;
-      z-index: 10;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-    }
-    .hero-inner {
-      position: relative;
-      z-index: 5;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       text-align: center;
       padding: 80px 24px;
-      gap: 32px;
     }
-    #hero-logo {
-      width: 64px;
-      height: 64px;
-      background: #06c755;
-      border-radius: 0px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    #hero-logo.animate {
-      transition: transform 0.8s ease-out, border-radius 0.8s ease-out;
-    }
-    #hero-logo span {
-      font-size: 14px;
-      font-weight: 800;
-      color: #fff;
-      letter-spacing: -0.01em;
-    }
-    #hero-content {
+    .hero-body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 18px;
+      gap: 20px;
       opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    #hero-content.visible {
+    .hero-body.visible {
       opacity: 1;
       transform: translateY(0);
     }
-    #hero-content h1 {
-      font-size: clamp(40px, 7vw, 80px);
+    .hero-body h1 {
+      font-size: clamp(44px, 7vw, 88px);
       font-weight: 800;
       letter-spacing: -0.04em;
-      line-height: 1.08;
+      line-height: 1.06;
     }
-    #hero-content em { font-style: normal; color: var(--mint); }
-    #hero-content p {
-      font-size: 17px;
+    .hero-body h1 em { font-style: normal; color: var(--mint); }
+    .hero-body p {
+      font-size: 18px;
       color: var(--text-2);
-      max-width: 440px;
+      max-width: 420px;
+      line-height: 1.7;
     }
 
     /* ── SCROLL REVEAL ── */
@@ -857,16 +821,12 @@
   </div>
 </section>
 
-<!-- ── HERO TRANSITION ── -->
-<section id="hero-transition">
-  <div id="hero-black"></div>
-  <div class="hero-inner">
-    <div id="hero-logo"><span>LINE</span></div>
-    <div id="hero-content">
-      <h1>รู้ว่าเงินหายไปไหน<br><em>แค่ส่งสลิป</em></h1>
-      <p>LINE Bot อ่านสลิปและจัดหมวดหมู่ให้อัตโนมัติ ฟรี</p>
-      <a href="#" class="btn-cta">เพิ่มเพื่อน LINE →</a>
-    </div>
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="hero-body" id="hero-body">
+    <h1>รู้ว่าเงินหายไปไหน<br><em>แค่ส่งสลิป</em></h1>
+    <p>LINE Bot อ่านสลิปและจัดหมวดหมู่ให้อัตโนมัติ ฟรี</p>
+    <a href="#" class="btn-cta">เพิ่มเพื่อน LINE →</a>
   </div>
 </section>
 
@@ -1091,7 +1051,6 @@
   }, { passive: true });
 
   /* ── VIDEO SCRUB (rAF + lerp) ── */
-  /* ── VIDEO SCRUB (rAF + lerp) ── */
   const videoSection = document.getElementById('video-section');
   const video        = document.getElementById('hero-video');
   const headline     = document.getElementById('video-headline');
@@ -1130,39 +1089,11 @@
 
   rafLoop();
 
-  /* ── HERO TRANSITION ── */
-  const heroBlack   = document.getElementById('hero-black');
-  const heroLogo    = document.getElementById('hero-logo');
-  const heroContent = document.getElementById('hero-content');
-  let heroFired     = false;
-
-  // Set initial scale so logo appears fullscreen — no transition yet
-  const maxLogoScale = Math.max(window.innerWidth, window.innerHeight) / 64;
-  heroLogo.style.transform    = `scale(${maxLogoScale})`;
-  heroLogo.style.borderRadius = '0px';
-
-  const heroObs = new IntersectionObserver(([entry]) => {
-    if (entry.isIntersecting && !heroFired) {
-      heroFired = true;
-
-      // Step 1 — black overlay fades out (seamless from video end)
-      heroBlack.style.opacity = '0';
-
-      // Step 2 — logo shrinks to 64px with CSS transition
-      setTimeout(() => {
-        heroLogo.classList.add('animate');
-        heroLogo.style.transform    = 'scale(1)';
-        heroLogo.style.borderRadius = '16px';
-      }, 200);
-
-      // Step 3 — headline + CTA fades in
-      setTimeout(() => {
-        heroContent.classList.add('visible');
-      }, 650);
-    }
-  }, { threshold: 0.25 });
-
-  heroObs.observe(document.getElementById('hero-transition'));
+  /* ── HERO fade-in ── */
+  const heroBody = document.getElementById('hero-body');
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) heroBody.classList.add('visible');
+  }, { threshold: 0.2 }).observe(heroBody);
 
   /* ── SCROLL REVEAL ── */
   const reveals = document.querySelectorAll('.reveal');
