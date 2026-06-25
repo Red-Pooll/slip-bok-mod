@@ -12,7 +12,7 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
+    "@google/generative-ai": "latest",
     "@line/bot-sdk": "^9.4.0",
     "@supabase/supabase-js": "^2.50.0",
     "axios": "^1.9.0",
