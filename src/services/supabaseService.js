@@ -22,17 +22,46 @@ async function saveTransaction(userId, data) {
 }
 
 async function getDailyTotal(userId) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
 
   const { data, error } = await supabase
     .from('transactions')
     .select('amount')
     .eq('user_id', userId)
-    .gte('slip_date', today.toISOString());
+    .gte('slip_date', start.toISOString());
 
   if (error) throw error;
+  return data.reduce((sum, t) => sum + Number(t.amount), 0);
+}
 
+async function getWeeklyTotal(userId) {
+  const start = new Date();
+  start.setDate(start.getDate() - start.getDay());
+  start.setHours(0, 0, 0, 0);
+
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('amount')
+    .eq('user_id', userId)
+    .gte('slip_date', start.toISOString());
+
+  if (error) throw error;
+  return data.reduce((sum, t) => sum + Number(t.amount), 0);
+}
+
+async function getMonthlyTotal(userId) {
+  const start = new Date();
+  start.setDate(1);
+  start.setHours(0, 0, 0, 0);
+
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('amount')
+    .eq('user_id', userId)
+    .gte('slip_date', start.toISOString());
+
+  if (error) throw error;
   return data.reduce((sum, t) => sum + Number(t.amount), 0);
 }
 
@@ -60,6 +89,18 @@ async function getWeeklySummary(userId) {
   return { total, byCategory, count: data.length };
 }
 
+async function getRecentTransactions(userId, limit = 10) {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('amount, merchant, category, slip_date')
+    .eq('user_id', userId)
+    .order('slip_date', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data;
+}
+
 async function getAllUserIds() {
   const { data, error } = await supabase
     .from('transactions')
@@ -67,8 +108,37 @@ async function getAllUserIds() {
     .gte('slip_date', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
   if (error) throw error;
-
   return [...new Set(data.map((r) => r.user_id))];
 }
 
-module.exports = { saveTransaction, getDailyTotal, getWeeklySummary, getAllUserIds };
+async function setBudget(userId, amount) {
+  const { error } = await supabase
+    .from('budgets')
+    .upsert({ user_id: userId, monthly_amount: amount, updated_at: new Date().toISOString() });
+
+  if (error) throw error;
+}
+
+async function getBudget(userId) {
+  const { data, error } = await supabase
+    .from('budgets')
+    .select('monthly_amount')
+    .eq('user_id', userId)
+    .single();
+
+  // PGRST116 = row not found — budget not set yet
+  if (error && error.code !== 'PGRST116') throw error;
+  return data?.monthly_amount ?? null;
+}
+
+module.exports = {
+  saveTransaction,
+  getDailyTotal,
+  getWeeklyTotal,
+  getMonthlyTotal,
+  getWeeklySummary,
+  getRecentTransactions,
+  getAllUserIds,
+  setBudget,
+  getBudget,
+};

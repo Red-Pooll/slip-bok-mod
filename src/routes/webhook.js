@@ -30,8 +30,21 @@ async function handleEvent(client, event) {
 
   if (event.message.type === 'text') {
     const text = event.message.text.trim();
+
     if (text === 'สรุป' || text === 'summary') {
       await slipHandler.handleSummaryRequest(client, event);
+      return;
+    }
+
+    if (text === 'ประวัติ' || text === 'history') {
+      await slipHandler.handleHistoryRequest(client, event);
+      return;
+    }
+
+    const budgetMatch = text.match(/^งบ\s*(\d+(?:\.\d+)?)$/);
+    if (budgetMatch) {
+      await slipHandler.handleBudgetRequest(client, event, parseFloat(budgetMatch[1]));
+      return;
     }
   }
 }
