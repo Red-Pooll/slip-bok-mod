@@ -738,13 +738,14 @@
     footer a:hover { color: var(--text-2); }
 
     /* ── HERO TRANSITION ── */
-    #hero-transition { position: relative; }
-    .hero-trans-sticky {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow: hidden;
+    #hero-transition {
+      position: relative;
+      min-height: 100vh;
       background: #0a0a0a;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     #hero-black {
       position: absolute;
@@ -752,50 +753,62 @@
       background: #0a0a0a;
       z-index: 10;
       pointer-events: none;
+      transition: opacity 0.4s ease;
     }
-    #hero-logo {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 80px;
-      height: 80px;
-      overflow: hidden;
-      border-radius: 0px;
+    .hero-inner {
+      position: relative;
       z-index: 5;
-    }
-    #hero-logo video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    #hero-content {
-      position: absolute;
-      inset: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       text-align: center;
-      padding: 0 24px;
-      z-index: 6;
+      padding: 80px 24px;
+      gap: 32px;
+    }
+    #hero-logo {
+      width: 64px;
+      height: 64px;
+      background: #06c755;
+      border-radius: 0px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    #hero-logo.animate {
+      transition: transform 0.8s ease-out, border-radius 0.8s ease-out;
+    }
+    #hero-logo span {
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+    #hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
       opacity: 0;
-      pointer-events: none;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    #hero-content.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
     #hero-content h1 {
       font-size: clamp(40px, 7vw, 80px);
       font-weight: 800;
       letter-spacing: -0.04em;
       line-height: 1.08;
-      margin-bottom: 18px;
     }
     #hero-content em { font-style: normal; color: var(--mint); }
     #hero-content p {
       font-size: 17px;
       color: var(--text-2);
-      margin-bottom: 36px;
+      max-width: 440px;
     }
-    #hero-content .btn-cta { pointer-events: all; }
 
     /* ── SCROLL REVEAL ── */
     .reveal {
@@ -845,12 +858,10 @@
 </section>
 
 <!-- ── HERO TRANSITION ── -->
-<section id="hero-transition" style="height:200vh;position:relative;">
-  <div class="hero-trans-sticky">
-    <div id="hero-black"></div>
-    <div id="hero-logo">
-      <video id="hero-logo-video" src="hero.mp4" muted playsinline preload="metadata"></video>
-    </div>
+<section id="hero-transition">
+  <div id="hero-black"></div>
+  <div class="hero-inner">
+    <div id="hero-logo"><span>LINE</span></div>
     <div id="hero-content">
       <h1>รู้ว่าเงินหายไปไหน<br><em>แค่ส่งสลิป</em></h1>
       <p>LINE Bot อ่านสลิปและจัดหมวดหมู่ให้อัตโนมัติ ฟรี</p>
@@ -1080,16 +1091,12 @@
   }, { passive: true });
 
   /* ── VIDEO SCRUB (rAF + lerp) ── */
-  const videoSection   = document.getElementById('video-section');
-  const video          = document.getElementById('hero-video');
-  const headline       = document.getElementById('video-headline');
-  const scrollHint     = document.getElementById('scroll-hint');
-  const videoFadeOut   = document.getElementById('video-fade-out');
-  const heroTrans      = document.getElementById('hero-transition');
-  const heroBlack      = document.getElementById('hero-black');
-  const heroLogo       = document.getElementById('hero-logo');
-  const heroContent    = document.getElementById('hero-content');
-  const heroLogoVideo  = document.getElementById('hero-logo-video');
+  /* ── VIDEO SCRUB (rAF + lerp) ── */
+  const videoSection = document.getElementById('video-section');
+  const video        = document.getElementById('hero-video');
+  const headline     = document.getElementById('video-headline');
+  const scrollHint   = document.getElementById('scroll-hint');
+  const videoFadeOut = document.getElementById('video-fade-out');
 
   let targetTime = 0;
   let smoothTime = 0;
@@ -1099,24 +1106,14 @@
     video.currentTime = 0;
   });
 
-  heroLogoVideo.addEventListener('loadedmetadata', () => {
-    heroLogoVideo.pause();
-    heroLogoVideo.currentTime = heroLogoVideo.duration;
-  });
-
-  // Generic progress helper
-  function getProgress(section) {
-    const rect = section.getBoundingClientRect();
-    const h    = section.offsetHeight - window.innerHeight;
+  function getVideoProgress() {
+    const rect = videoSection.getBoundingClientRect();
+    const h    = videoSection.offsetHeight - window.innerHeight;
     return Math.min(1, Math.max(0, -rect.top) / h);
   }
 
-  // smoothstep — close to cubic-bezier(0.25, 0.1, 0.25, 1)
-  function ease(t) { return t * t * (3 - 2 * t); }
-
   function rafLoop() {
-    /* — video section — */
-    const vp = getProgress(videoSection);
+    const vp = getVideoProgress();
 
     if (video.readyState >= 2 && video.duration) {
       targetTime = vp * video.duration;
@@ -1124,32 +1121,48 @@
       video.currentTime = smoothTime;
     }
 
-    headline.style.opacity    = Math.max(0, 1 - vp / 0.15);
-    scrollHint.style.opacity  = Math.max(0, 1 - vp / 0.08);
+    headline.style.opacity     = Math.max(0, 1 - vp / 0.15);
+    scrollHint.style.opacity   = Math.max(0, 1 - vp / 0.08);
     videoFadeOut.style.opacity = Math.max(0, (vp - 0.9) / 0.1);
-
-    /* — hero transition section — */
-    const hp = getProgress(heroTrans);
-
-    // Phase 1 (0 → 0.2): black fades out to reveal last video frame
-    heroBlack.style.opacity = Math.max(0, 1 - hp / 0.2);
-
-    // Phase 2 (0 → 0.7): logo shrinks from fullscreen → 80px
-    const shrinkT  = ease(Math.min(1, hp / 0.7));
-    const maxScale = Math.max(window.innerWidth, window.innerHeight) / 80;
-    const scale    = maxScale * (1 - shrinkT) + shrinkT;
-    heroLogo.style.transform    = `translate(-50%, -50%) scale(${scale})`;
-    heroLogo.style.borderRadius = `${Math.round(shrinkT * 16)}px`;
-
-    // Phase 3 (0.45 → 0.9): headline fades in and rises
-    const contentT = ease(Math.max(0, Math.min(1, (hp - 0.45) / 0.45)));
-    heroContent.style.opacity   = contentT;
-    heroContent.style.transform = `translateY(${Math.round((1 - contentT) * 20)}px)`;
 
     requestAnimationFrame(rafLoop);
   }
 
   rafLoop();
+
+  /* ── HERO TRANSITION ── */
+  const heroBlack   = document.getElementById('hero-black');
+  const heroLogo    = document.getElementById('hero-logo');
+  const heroContent = document.getElementById('hero-content');
+  let heroFired     = false;
+
+  // Set initial scale so logo appears fullscreen — no transition yet
+  const maxLogoScale = Math.max(window.innerWidth, window.innerHeight) / 64;
+  heroLogo.style.transform    = `scale(${maxLogoScale})`;
+  heroLogo.style.borderRadius = '0px';
+
+  const heroObs = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting && !heroFired) {
+      heroFired = true;
+
+      // Step 1 — black overlay fades out (seamless from video end)
+      heroBlack.style.opacity = '0';
+
+      // Step 2 — logo shrinks to 64px with CSS transition
+      setTimeout(() => {
+        heroLogo.classList.add('animate');
+        heroLogo.style.transform    = 'scale(1)';
+        heroLogo.style.borderRadius = '16px';
+      }, 200);
+
+      // Step 3 — headline + CTA fades in
+      setTimeout(() => {
+        heroContent.classList.add('visible');
+      }, 650);
+    }
+  }, { threshold: 0.25 });
+
+  heroObs.observe(document.getElementById('hero-transition'));
 
   /* ── SCROLL REVEAL ── */
   const reveals = document.querySelectorAll('.reveal');
