@@ -39,9 +39,9 @@
       top: 0; left: 0; right: 0;
       z-index: 200;
       height: 56px;
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
       align-items: center;
-      justify-content: space-between;
       padding: 0 32px;
       border-bottom: 1px solid transparent;
       transition: border-color .3s, background .3s;
@@ -49,16 +49,34 @@
     .nav.scrolled {
       background: rgba(10,10,10,0.9);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-color: var(--border);
     }
     .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       font-size: 15px;
       font-weight: 700;
       color: var(--text);
       text-decoration: none;
       letter-spacing: -0.01em;
     }
+    .nav-logo img { border-radius: 6px; display: block; }
     .nav-logo span { color: var(--mint); }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+    .nav-link {
+      font-size: 14px;
+      color: var(--text-2);
+      text-decoration: none;
+      transition: color .15s;
+    }
+    .nav-link:hover { color: var(--mint); }
+    .nav-right { display: flex; justify-content: flex-end; }
     .nav-cta {
       display: inline-flex;
       align-items: center;
@@ -746,8 +764,18 @@
 
 <!-- NAV -->
 <nav class="nav" id="nav">
-  <a href="/" class="nav-logo">สลิป<span>บอกหมด</span></a>
-  <a href="#" class="nav-cta">เพิ่มเพื่อน LINE</a>
+  <a href="/" class="nav-logo">
+    <img src="logo.png" width="32" height="32" alt="">
+    สลิป<span>บอกหมด</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features" class="nav-link">ฟีเจอร์</a>
+    <a href="#how-it-works" class="nav-link">วิธีใช้</a>
+    <a href="#pricing" class="nav-link">ราคา</a>
+  </div>
+  <div class="nav-right">
+    <a href="#" class="nav-cta">เพิ่มเพื่อน LINE</a>
+  </div>
 </nav>
 
 <div id="flying-logo"><img src="logo.png" alt=""></div>
@@ -902,7 +930,7 @@
 </section>
 
 <!-- ── HOW IT WORKS ── -->
-<section id="how">
+<section id="how-it-works">
   <div class="container">
     <div class="how-header reveal">
       <span class="label">วิธีเริ่มต้น</span>
