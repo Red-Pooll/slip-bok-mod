@@ -1,21 +1,21 @@
-const vision = require('@google-cloud/vision');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-if (!process.env.GOOGLE_CREDENTIALS_JSON) {
-  throw new Error('[visionService] GOOGLE_CREDENTIALS_JSON environment variable is not set');
-}
-
-const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
-const visionClient = new vision.ImageAnnotatorClient({ credentials });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
 async function extractTextFromImage(imageBuffer) {
-  const [result] = await visionClient.textDetection({ image: { content: imageBuffer } });
-  const detections = result.textAnnotations;
+  const result = await model.generateContent([
+    {
+      inlineData: {
+        data: imageBuffer.toString('base64'),
+        mimeType: 'image/jpeg',
+      },
+    },
+    'อ่านข้อความทั้งหมดในสลิปนี้ให้ครบถ้วน ตอบเฉพาะข้อความที่อ่านได้เท่านั้น ไม่ต้องอธิบายเพิ่มเติม',
+  ]);
 
-  if (!detections || detections.length === 0) {
-    return null;
-  }
-
-  return detections[0].description;
+  const text = result.response.text().trim();
+  return text || null;
 }
 
 module.exports = { extractTextFromImage };
