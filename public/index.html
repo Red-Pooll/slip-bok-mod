@@ -634,49 +634,23 @@
       color: #0a0a0a;
     }
     .btn-plan.paid:hover { opacity: .85; }
-    .pricing-toggle {
+    .pro-annual {
+      font-size: 13px;
+      color: var(--mint);
+      margin-top: 6px;
       display: flex;
       align-items: center;
-      gap: 4px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 4px;
-      margin-bottom: 40px;
+      gap: 8px;
     }
-    .toggle-btn {
-      padding: 7px 20px;
-      border-radius: 5px;
-      font-size: 14px;
-      font-weight: 500;
-      font-family: inherit;
-      border: none;
-      cursor: pointer;
-      color: var(--text-2);
-      background: transparent;
-      transition: background .2s, color .2s;
-    }
-    .toggle-btn.active {
-      background: var(--mint);
-      color: #0a0a0a;
-      font-weight: 600;
-    }
-    .save-badge {
-      display: none;
+    .pro-annual-badge {
       font-size: 11px;
       font-weight: 600;
       color: var(--mint);
       background: var(--mint-sub);
       border: 1px solid var(--mint-border);
       border-radius: 99px;
-      padding: 2px 10px;
-      margin-left: 8px;
+      padding: 2px 8px;
     }
-    .save-badge.show { display: inline-block; }
-    #pro-price {
-      transition: opacity .25s ease;
-    }
-    #pro-price.fade { opacity: 0; }
 
     /* ── CTA ── */
     #cta {
@@ -1014,11 +988,6 @@
       <h2>เริ่มฟรี<br>อัปเกรดเมื่อต้องการ</h2>
       <p>ไม่มีบัตรเครดิต ไม่มีการ lock-in ทดลองใช้ได้เต็มฟีเจอร์ก่อน</p>
     </div>
-    <div class="pricing-toggle reveal">
-      <button class="toggle-btn active" id="btn-monthly">รายเดือน</button>
-      <button class="toggle-btn" id="btn-yearly">รายปี</button>
-      <span class="save-badge" id="save-badge">ประหยัด 20%</span>
-    </div>
     <div class="pricing-grid reveal">
       <div class="pricing-card">
         <div class="plan-label">Free</div>
@@ -1036,8 +1005,12 @@
       </div>
       <div class="pricing-card pro">
         <div class="plan-label">Pro</div>
-        <div class="plan-price" id="pro-price">฿99</div>
-        <div class="plan-period" id="pro-period">ต่อเดือน</div>
+        <div class="plan-price">฿99</div>
+        <div class="plan-period">ต่อเดือน</div>
+        <div class="pro-annual">
+          หรือ ฿79/เดือน เมื่อจ่ายรายปี
+          <span class="pro-annual-badge">ประหยัด 20%</span>
+        </div>
         <ul class="plan-features">
           <li class="active"><span class="feat-check">✓</span>ทุกอย่างใน Free</li>
           <li class="active"><span class="feat-check">✓</span>ตั้งงบประมาณรายเดือน</li>
@@ -1183,27 +1156,6 @@
 
   chatObs.observe(chatWindow);
 
-  /* ── PRICING TOGGLE ── */
-  const btnMonthly = document.getElementById('btn-monthly');
-  const btnYearly  = document.getElementById('btn-yearly');
-  const proPrice   = document.getElementById('pro-price');
-  const proPeriod  = document.getElementById('pro-period');
-  const saveBadge  = document.getElementById('save-badge');
-
-  function setPrice(yearly) {
-    proPrice.classList.add('fade');
-    setTimeout(() => {
-      proPrice.textContent  = yearly ? '฿79'     : '฿99';
-      proPeriod.textContent = yearly ? 'ต่อเดือน (จ่ายรายปี)' : 'ต่อเดือน';
-      proPrice.classList.remove('fade');
-    }, 250);
-    btnMonthly.classList.toggle('active', !yearly);
-    btnYearly.classList.toggle('active',  yearly);
-    saveBadge.classList.toggle('show',    yearly);
-  }
-
-  btnMonthly.addEventListener('click', () => setPrice(false));
-  btnYearly.addEventListener('click',  () => setPrice(true));
 </script>
 </body>
 </html>
