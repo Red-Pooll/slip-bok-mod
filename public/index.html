@@ -554,22 +554,25 @@
     }
     .pricing-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-      max-width: 720px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 960px;
     }
-    @media (max-width: 580px) {
+    @media (max-width: 700px) {
       .pricing-grid { grid-template-columns: 1fr; }
     }
     .pricing-card {
-      padding: 40px 36px;
-      border-right: 1px solid var(--border);
-    }
-    .pricing-card:last-child { border-right: none; }
-    .pricing-card.pro {
+      padding: 36px 28px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
       background: var(--surface);
+      display: flex;
+      flex-direction: column;
+    }
+    .pricing-card.yearly {
+      border-color: var(--mint);
+      background: linear-gradient(170deg, rgba(125,212,180,0.06) 0%, var(--surface) 60%);
+      position: relative;
     }
     .plan-label {
       font-size: 11px;
@@ -577,9 +580,27 @@
       letter-spacing: 0.09em;
       text-transform: uppercase;
       color: var(--text-3);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
-    .pricing-card.pro .plan-label { color: var(--mint); }
+    .pricing-card.yearly .plan-label { color: var(--mint); }
+    .yearly-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--mint);
+      background: var(--mint-sub);
+      border: 1px solid var(--mint-border);
+      border-radius: 99px;
+      padding: 3px 10px;
+      margin-bottom: 12px;
+    }
+    .plan-billing {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 4px;
+      margin-bottom: 28px;
+    }
+    .plan-features { margin-bottom: 28px; flex: 1; }
     .plan-price {
       font-size: 40px;
       font-weight: 800;
@@ -634,48 +655,6 @@
       color: #0a0a0a;
     }
     .btn-plan.paid:hover { opacity: .85; }
-    .plan-price-row {
-      display: flex;
-      align-items: stretch;
-      gap: 20px;
-      margin: 16px 0 6px;
-    }
-    .price-option {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .price-option .amount {
-      font-size: 36px;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      line-height: 1;
-    }
-    .price-option .period {
-      font-size: 12px;
-      color: var(--text-3);
-      line-height: 1.4;
-    }
-    .price-option.annual .amount { color: var(--mint); }
-    .price-option.annual .period { color: var(--mint); opacity: .7; }
-    .price-divider {
-      width: 1px;
-      background: var(--border-2);
-      flex-shrink: 0;
-      margin: 4px 0;
-    }
-    .annual-badge {
-      display: inline-block;
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--mint);
-      background: var(--mint-sub);
-      border: 1px solid var(--mint-border);
-      border-radius: 99px;
-      padding: 2px 8px;
-      margin-bottom: 6px;
-      align-self: flex-start;
-    }
 
     /* ── CTA ── */
     #cta {
@@ -1014,36 +993,29 @@
       <p>ไม่มีบัตรเครดิต ไม่มีการ lock-in ทดลองใช้ได้เต็มฟีเจอร์ก่อน</p>
     </div>
     <div class="pricing-grid reveal">
+
       <div class="pricing-card">
         <div class="plan-label">Free</div>
         <div class="plan-price">฿0</div>
         <div class="plan-period">ตลอดไป</div>
         <ul class="plan-features">
-          <li class="active"><span class="feat-check">✓</span>อ่านสลิปไม่จำกัด</li>
+          <li class="active"><span class="feat-check">✓</span>อ่านสลิป 20 ใบ/เดือน</li>
           <li class="active"><span class="feat-check">✓</span>จัดหมวดหมู่อัตโนมัติ</li>
-          <li class="active"><span class="feat-check">✓</span>สรุปรายวันและรายสัปดาห์</li>
+          <li class="active"><span class="feat-check">✓</span>สรุปรายวัน/รายสัปดาห์</li>
           <li><span class="feat-cross">–</span>ตั้งงบประมาณ</li>
           <li><span class="feat-cross">–</span>แจ้งเตือนงบเกิน</li>
           <li><span class="feat-cross">–</span>ส่งออกรายงาน CSV</li>
         </ul>
         <a href="#" class="btn-plan free">เริ่มใช้งาน</a>
       </div>
-      <div class="pricing-card pro">
-        <div class="plan-label">Pro</div>
-        <div class="plan-price-row">
-          <div class="price-option">
-            <span class="amount">฿99</span>
-            <span class="period">/เดือน</span>
-          </div>
-          <div class="price-divider"></div>
-          <div class="price-option annual">
-            <span class="annual-badge">ประหยัด 20%</span>
-            <span class="amount">฿79</span>
-            <span class="period">/เดือน<br>(จ่ายรายปี)</span>
-          </div>
-        </div>
+
+      <div class="pricing-card">
+        <div class="plan-label">Pro รายเดือน</div>
+        <div class="plan-price">฿99</div>
+        <div class="plan-period">ต่อเดือน</div>
         <ul class="plan-features">
           <li class="active"><span class="feat-check">✓</span>ทุกอย่างใน Free</li>
+          <li class="active"><span class="feat-check">✓</span>อ่านสลิปไม่จำกัด</li>
           <li class="active"><span class="feat-check">✓</span>ตั้งงบประมาณรายเดือน</li>
           <li class="active"><span class="feat-check">✓</span>แจ้งเตือนเมื่อใช้เงินเกิน 80%</li>
           <li class="active"><span class="feat-check">✓</span>ส่งออกรายงาน CSV</li>
@@ -1052,6 +1024,25 @@
         </ul>
         <a href="#" class="btn-plan paid">ทดลองฟรี 7 วัน</a>
       </div>
+
+      <div class="pricing-card yearly">
+        <div class="plan-label">Pro รายปี</div>
+        <span class="yearly-badge">ประหยัด 20%</span>
+        <div class="plan-price">฿79</div>
+        <div class="plan-period">ต่อเดือน</div>
+        <div class="plan-billing">เรียกเก็บ ฿948/ปี</div>
+        <ul class="plan-features">
+          <li class="active"><span class="feat-check">✓</span>ทุกอย่างใน Free</li>
+          <li class="active"><span class="feat-check">✓</span>อ่านสลิปไม่จำกัด</li>
+          <li class="active"><span class="feat-check">✓</span>ตั้งงบประมาณรายเดือน</li>
+          <li class="active"><span class="feat-check">✓</span>แจ้งเตือนเมื่อใช้เงินเกิน 80%</li>
+          <li class="active"><span class="feat-check">✓</span>ส่งออกรายงาน CSV</li>
+          <li class="active"><span class="feat-check">✓</span>สรุปรายเดือน</li>
+          <li class="active"><span class="feat-check">✓</span>Priority Support</li>
+        </ul>
+        <a href="#" class="btn-plan paid">เริ่มต้นรายปี</a>
+      </div>
+
     </div>
   </div>
 </section>
