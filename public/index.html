@@ -98,6 +98,15 @@
       position: absolute;
       inset: 0;
       background: rgba(0,0,0,0.3);
+      pointer-events: none;
+    }
+    #video-fade-out {
+      position: absolute;
+      inset: 0;
+      background: #0a0a0a;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 5;
     }
     .video-headline {
       position: absolute;
@@ -761,6 +770,7 @@
       preload="auto"
     ></video>
     <div class="video-overlay"></div>
+    <div id="video-fade-out"></div>
 
     <div class="video-headline" id="video-headline">
       <h1>รู้ว่าเงินหายไปไหน<br><em>แค่ส่งสลิป</em></h1>
@@ -994,36 +1004,51 @@
     nav.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 
-  /* ── VIDEO SCRUB ── */
+  /* ── VIDEO SCRUB (rAF + lerp) ── */
   const videoSection = document.getElementById('video-section');
   const video        = document.getElementById('hero-video');
   const headline     = document.getElementById('video-headline');
   const scrollHint   = document.getElementById('scroll-hint');
+  const videoFadeOut = document.getElementById('video-fade-out');
+
+  let targetTime = 0;
+  let smoothTime = 0;
 
   video.addEventListener('loadedmetadata', () => {
     video.pause();
     video.currentTime = 0;
   });
 
-  function scrubVideo() {
-    const rect           = videoSection.getBoundingClientRect();
-    const scrollableH    = videoSection.offsetHeight - window.innerHeight;
-    const scrolled       = Math.max(0, -rect.top);
-    const progress       = Math.min(1, scrolled / scrollableH);
+  function getScrollProgress() {
+    const rect      = videoSection.getBoundingClientRect();
+    const scrollableH = videoSection.offsetHeight - window.innerHeight;
+    const scrolled  = Math.max(0, -rect.top);
+    return Math.min(1, scrolled / scrollableH);
+  }
 
+  function rafLoop() {
+    const progress = getScrollProgress();
+
+    // Lerp video currentTime toward target
     if (video.readyState >= 2 && video.duration) {
-      video.currentTime = progress * video.duration;
+      targetTime = progress * video.duration;
+      smoothTime += (targetTime - smoothTime) * 0.1;
+      video.currentTime = smoothTime;
     }
 
     // Headline fades out over first 15% of scroll
-    const headlineOpacity = Math.max(0, 1 - progress / 0.15);
-    headline.style.opacity = headlineOpacity;
+    headline.style.opacity = Math.max(0, 1 - progress / 0.15);
 
     // Scroll hint fades out over first 8%
     scrollHint.style.opacity = Math.max(0, 1 - progress / 0.08);
+
+    // Black overlay fades in over last 10% (90% → 100%)
+    videoFadeOut.style.opacity = Math.max(0, (progress - 0.9) / 0.1);
+
+    requestAnimationFrame(rafLoop);
   }
 
-  window.addEventListener('scroll', scrubVideo, { passive: true });
+  rafLoop();
 
   /* ── SCROLL REVEAL ── */
   const reveals = document.querySelectorAll('.reveal');
