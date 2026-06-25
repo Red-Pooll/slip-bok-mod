@@ -2,7 +2,6 @@ const lineService = require('../services/lineService');
 const visionService = require('../services/visionService');
 const geminiService = require('../services/geminiService');
 const supabaseService = require('../services/supabaseService');
-const { parseSlipText } = require('../utils/parseSlip');
 const { formatSaveConfirmation, formatWeeklySummary, formatParseError } = require('../utils/formatMessage');
 
 async function handleSlipImage(client, event) {
@@ -17,31 +16,25 @@ async function handleSlipImage(client, event) {
     return;
   }
 
-  const rawText = await visionService.extractTextFromImage(imageBuffer);
-  if (!rawText) {
+  const parsed = await visionService.extractTextFromImage(imageBuffer);
+  if (!parsed || !parsed.amount) {
     await lineService.replyText(replyToken, formatParseError());
     return;
   }
 
-  const parsed = parseSlipText(rawText);
-  if (!parsed.amount) {
-    await lineService.replyText(replyToken, formatParseError());
-    return;
-  }
-
-  const merchantName = parsed.merchantName || 'ไม่ระบุร้านค้า';
+  const recipientName = parsed.recipient || 'ไม่ระบุผู้รับ';
   const { category, merchantShortName } = await geminiService.categorizeTransaction(
-    merchantName,
+    recipientName,
     parsed.amount,
-    rawText
+    parsed.recipient || ''
   );
 
   await supabaseService.saveTransaction(userId, {
     amount: parsed.amount,
     merchantShortName,
     category,
-    rawText,
-    slipDate: parsed.slipDate,
+    rawText: parsed.recipient || '',
+    slipDate: parsed.date ? new Date(parsed.date).toISOString() : new Date().toISOString(),
   });
 
   const dailyTotal = await supabaseService.getDailyTotal(userId);
