@@ -3,38 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>สลิปบอกหมด</title>
+  <title>สลิปบอกหมด — AI อ่านสลิปอัตโนมัติ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:      #f8f8f6;
-      --surface: #ffffff;
-      --text:    #111111;
-      --text-2:  #666666;
-      --text-3:  #888888;
-      --mint:    #7dd4b4;
-      --border:  #e8e8e8;
-      --border-2:#ebebeb;
+      --bg:      #0a0a0a;
+      --text:    #ffffff;
+      --accent:  #7dd4b4;
+      --muted:   #888888;
+      --border:  #1f1f1f;
+      --surface: #111111;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
 
-    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
 
-    /* ── NAV ── */
+    /* ─── NAVBAR ─── */
     .nav {
       position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 200;
+      inset: 0 0 auto 0;
+      z-index: 100;
       height: 60px;
       display: flex;
       align-items: center;
@@ -44,22 +49,22 @@
       transition: border-color .3s, background .3s;
     }
     .nav.scrolled {
-      background: rgba(248,248,246,0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(10,10,10,.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-color: var(--border);
     }
     .nav-logo {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 16px;
-      font-weight: 700;
+      gap: 9px;
+      font-size: 15px;
+      font-weight: 600;
       color: var(--text);
       text-decoration: none;
-      letter-spacing: -0.02em;
+      letter-spacing: -.02em;
     }
-    .nav-logo img { height: 32px; width: auto; object-fit: contain; }
+    .nav-logo img { width: 32px; height: 32px; object-fit: contain; }
     .nav-links {
       display: flex;
       align-items: center;
@@ -67,70 +72,64 @@
     }
     .nav-link {
       font-size: 14px;
-      color: var(--text-2);
+      color: var(--muted);
       text-decoration: none;
       transition: color .15s;
     }
     .nav-link:hover { color: var(--text); }
-    .nav-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--mint);
-      color: var(--text);
-      text-decoration: none;
+    .nav-btn {
       font-size: 13px;
       font-weight: 600;
-      padding: 8px 20px;
+      font-family: inherit;
+      color: var(--accent);
+      background: transparent;
+      border: 1px solid var(--accent);
       border-radius: 999px;
-      transition: opacity .15s;
+      padding: 8px 20px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s, color .2s;
     }
-    .nav-cta:hover { opacity: .8; }
+    .nav-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
 
-    /* ── HERO ── */
+    /* ─── HERO ─── */
     #hero {
       min-height: 100vh;
-      background: var(--bg);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 100px 24px 80px;
+      padding: 120px 24px 80px;
+      position: relative;
     }
     .hero-logo {
-      width: 220px;
-      height: 220px;
+      width: 280px;
+      height: 280px;
       object-fit: contain;
-      margin-bottom: 48px;
-      animation: hero-float 4s ease-in-out infinite;
+      margin-bottom: 40px;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 48px rgba(125,212,180,.55));
     }
-    @keyframes hero-float {
-      0%, 100% { transform: translateY(-8px); }
-      50%       { transform: translateY(0); }
+    @keyframes float {
+      0%, 100% { transform: translateY(-12px); }
+      50%       { transform: translateY(4px); }
     }
-    .hero-eyebrow {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--mint);
-      margin-bottom: 24px;
-    }
-    #hero h1 {
-      font-size: 72px;
+    .hero-h1 {
+      font-size: 80px;
       font-weight: 800;
-      letter-spacing: -2px;
-      line-height: 1.06;
-      color: var(--text);
-      margin-bottom: 24px;
+      letter-spacing: -3px;
+      line-height: 1.04;
+      margin-bottom: 22px;
     }
-    #hero h1 .mint { color: var(--mint); }
-    #hero p {
+    .hero-h1 .accent { color: var(--accent); display: block; }
+    .hero-sub {
       font-size: 18px;
-      color: var(--text-3);
-      max-width: 400px;
+      color: var(--muted);
+      max-width: 420px;
       line-height: 1.7;
       margin-bottom: 40px;
     }
@@ -138,230 +137,251 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: var(--mint);
-      color: var(--text);
-      text-decoration: none;
-      font-size: 15px;
+      background: var(--accent);
+      color: #000;
+      font-size: 16px;
       font-weight: 700;
-      padding: 14px 32px;
+      font-family: inherit;
+      padding: 16px 40px;
       border-radius: 999px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      animation: glow-pulse 2.4s ease-in-out infinite;
       transition: opacity .15s, transform .15s;
     }
-    .btn-hero:hover { opacity: .85; transform: translateY(-1px); }
-    .hero-note {
-      margin-top: 20px;
+    .btn-hero:hover {
+      opacity: .88;
+      transform: translateY(-2px);
+      animation: none;
+    }
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(125,212,180,0); }
+      50%       { box-shadow: 0 0 28px 8px rgba(125,212,180,.22); }
+    }
+    .hero-badge {
+      margin-top: 18px;
       font-size: 13px;
-      color: #aaa;
+      color: #555;
+      letter-spacing: .01em;
     }
     .hero-scroll {
       position: absolute;
-      bottom: 36px;
+      bottom: 32px;
       left: 50%;
       transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      color: #bbb;
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      animation: bounce-arrow 1.8s ease-in-out infinite;
+      color: #333;
+      font-size: 20px;
+      animation: bob 1.8s ease-in-out infinite;
     }
-    @keyframes bounce-arrow {
+    @keyframes bob {
       0%, 100% { transform: translateX(-50%) translateY(0); }
-      50%       { transform: translateX(-50%) translateY(6px); }
+      50%       { transform: translateX(-50%) translateY(7px); }
     }
 
-    /* ── SECTION SHARED ── */
-    section { padding: 120px 0; }
+    /* ─── SECTION DEFAULTS ─── */
+    .section {
+      padding: 120px 0;
+      border-top: 1px solid var(--border);
+    }
     .section-label {
       display: block;
       font-size: 12px;
       font-weight: 600;
-      letter-spacing: 0.1em;
+      letter-spacing: .1em;
       text-transform: uppercase;
-      color: var(--mint);
-      margin-bottom: 16px;
+      color: var(--accent);
+      margin-bottom: 18px;
     }
     .section-title {
-      font-size: 48px;
+      font-size: 56px;
       font-weight: 800;
-      letter-spacing: -1.5px;
-      line-height: 1.1;
+      letter-spacing: -2px;
+      line-height: 1.06;
       color: var(--text);
-      margin-bottom: 16px;
+      margin-bottom: 72px;
     }
-    .section-sub {
-      font-size: 17px;
-      color: var(--text-2);
-      line-height: 1.7;
-      max-width: 440px;
-    }
-    .section-head { margin-bottom: 72px; }
 
-    /* ── FEATURES ── */
-    #features { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    /* ─── FEATURES ─── */
     .features-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 1px;
-      background: var(--border-2);
-      border: 1px solid var(--border-2);
-      border-radius: 16px;
-      overflow: hidden;
     }
     @media (max-width: 640px) { .features-grid { grid-template-columns: 1fr; } }
-    .feature-card {
-      background: var(--surface);
-      padding: 48px 40px;
-      transition: background .2s;
+    .feature-item {
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 0 32px;
+      align-items: start;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
     }
-    .feature-card:hover { background: #fafafa; }
+    .feature-item.in { opacity: 1; transform: none; }
+    .feature-item:nth-child(odd) { padding-right: 48px; }
+    .feature-item:nth-child(even) {
+      padding-left: 48px;
+      border-left: 1px solid var(--border);
+    }
+    .feature-item:nth-last-child(-n+2) { border-bottom: none; }
+    @media (max-width: 640px) {
+      .feature-item { grid-template-columns: 60px 1fr; padding: 36px 0 !important; border-left: none !important; }
+      .feature-item:last-child { border-bottom: none; }
+    }
     .feature-num {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      color: var(--mint);
-      font-variant-numeric: tabular-nums;
-      margin-bottom: 24px;
-      display: block;
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      color: var(--accent);
+      line-height: 1;
+      opacity: .9;
     }
-    .feature-card h3 {
+    .feature-body h3 {
       font-size: 20px;
       font-weight: 700;
-      letter-spacing: -0.03em;
+      letter-spacing: -.03em;
       color: var(--text);
       margin-bottom: 10px;
+      margin-top: 8px;
     }
-    .feature-card p {
+    .feature-body p {
       font-size: 15px;
-      color: var(--text-2);
-      line-height: 1.7;
+      color: var(--muted);
+      line-height: 1.75;
     }
 
-    /* ── HOW IT WORKS ── */
-    #how-it-works { background: var(--bg); }
-    .steps-grid {
+    /* ─── HOW IT WORKS ─── */
+    .steps-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
+      position: relative;
+      gap: 0;
     }
-    @media (max-width: 700px) { .steps-grid { grid-template-columns: 1fr; } }
-    .step-card {
-      background: var(--surface);
-      border: 1px solid var(--border-2);
-      border-radius: 16px;
-      padding: 40px 32px;
-      transition: transform .2s, box-shadow .2s;
+    @media (max-width: 680px) { .steps-row { grid-template-columns: 1fr; } }
+    .steps-row::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: calc(100% / 6);
+      right: calc(100% / 6);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
     }
-    .step-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+    @media (max-width: 680px) { .steps-row::before { display: none; } }
+    .step-item {
+      padding: 0 32px 0 0;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
     }
-    .step-num {
-      font-size: 40px;
-      font-weight: 800;
-      letter-spacing: -2px;
-      color: var(--border-2);
-      line-height: 1;
-      margin-bottom: 28px;
-      display: block;
+    .step-item.in { opacity: 1; transform: none; }
+    .step-item:last-child { padding-right: 0; }
+    @media (max-width: 680px) {
+      .step-item { padding: 0 0 40px 0; border-bottom: 1px solid var(--border); }
+      .step-item:last-child { border-bottom: none; padding-bottom: 0; }
     }
-    .step-card h3 {
-      font-size: 18px;
+    .step-icon {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      margin-bottom: 24px;
+      filter: drop-shadow(0 0 12px rgba(125,212,180,.4));
+    }
+    .step-item h3 {
+      font-size: 19px;
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: -.02em;
       color: var(--text);
       margin-bottom: 10px;
     }
-    .step-card p {
+    .step-item p {
       font-size: 15px;
-      color: var(--text-2);
-      line-height: 1.7;
+      color: var(--muted);
+      line-height: 1.75;
     }
 
-    /* ── PRICING ── */
-    #pricing { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    /* ─── PRICING ─── */
     .pricing-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 16px;
     }
     @media (max-width: 700px) { .pricing-grid { grid-template-columns: 1fr; } }
     .pricing-card {
-      background: var(--surface);
-      border: 1px solid var(--border-2);
+      border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 40px 32px;
+      padding: 32px;
       display: flex;
       flex-direction: column;
-      transition: transform .2s, box-shadow .2s;
+      gap: 0;
+      transition: border-color .2s, transform .2s;
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease, border-color .2s;
     }
-    .pricing-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.07);
-    }
+    .pricing-card.in { opacity: 1; transform: none; }
+    .pricing-card:hover { border-color: #333; transform: translateY(-4px); }
     .pricing-card.featured {
-      border-color: var(--mint);
-      background: #f5fdf9;
+      border-color: var(--accent);
     }
+    .pricing-card.featured:hover { border-color: var(--accent); }
     .plan-name {
       font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.1em;
+      letter-spacing: .1em;
       text-transform: uppercase;
-      color: var(--text-3);
+      color: var(--muted);
       margin-bottom: 20px;
     }
-    .pricing-card.featured .plan-name { color: var(--mint); }
+    .pricing-card.featured .plan-name { color: var(--accent); }
     .plan-price {
-      font-size: 48px;
+      font-size: 52px;
       font-weight: 800;
       letter-spacing: -2px;
       color: var(--text);
       line-height: 1;
-      margin-bottom: 4px;
     }
     .plan-period {
       font-size: 13px;
-      color: var(--text-3);
-      margin-bottom: 8px;
+      color: var(--muted);
+      margin-top: 4px;
+      margin-bottom: 6px;
     }
     .plan-badge {
       display: inline-block;
       font-size: 11px;
-      font-weight: 600;
-      color: var(--mint);
-      background: rgba(125,212,180,0.12);
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(125,212,180,.1);
       border-radius: 999px;
-      padding: 3px 10px;
+      padding: 4px 10px;
       margin-bottom: 28px;
     }
-    .plan-badge-empty { margin-bottom: 28px; min-height: 22px; display: block; }
     .plan-divider {
       height: 1px;
       background: var(--border);
-      margin-bottom: 28px;
+      margin: 24px 0;
     }
     .plan-features {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 13px;
       flex: 1;
       margin-bottom: 32px;
     }
     .plan-features li {
       font-size: 14px;
-      color: var(--text-2);
+      color: var(--muted);
       display: flex;
       gap: 10px;
       align-items: flex-start;
     }
-    .plan-features li.active { color: var(--text); }
-    .feat-check { color: var(--mint); flex-shrink: 0; font-weight: 700; }
-    .feat-cross { color: #ccc; flex-shrink: 0; }
+    .plan-features li.on { color: #ddd; }
+    .check { color: var(--accent); font-weight: 700; flex-shrink: 0; }
+    .cross { color: #333; flex-shrink: 0; }
     .btn-plan {
       display: block;
       width: 100%;
@@ -373,60 +393,68 @@
       cursor: pointer;
       text-align: center;
       text-decoration: none;
-      transition: opacity .15s, transform .15s;
+      transition: opacity .15s, transform .15s, background .2s;
     }
     .btn-plan:hover { opacity: .85; transform: translateY(-1px); }
-    .btn-plan.outline {
+    .btn-plan.ghost {
       background: transparent;
-      border: 1.5px solid var(--border-2);
+      border: 1px solid var(--border);
       color: var(--text);
     }
-    .btn-plan.outline:hover { border-color: #ccc; }
-    .btn-plan.filled {
-      background: var(--mint);
-      border: 1.5px solid var(--mint);
-      color: var(--text);
+    .btn-plan.ghost:hover { border-color: #444; }
+    .btn-plan.solid {
+      background: var(--accent);
+      border: 1px solid var(--accent);
+      color: #000;
     }
 
-    /* ── CTA ── */
+    /* ─── CTA ─── */
     #cta {
-      background: var(--bg);
+      padding: 140px 0;
+      border-top: 1px solid var(--border);
       text-align: center;
     }
-    #cta h2 {
+    .cta-title {
       font-size: 64px;
       font-weight: 800;
-      letter-spacing: -2px;
+      letter-spacing: -2.5px;
       line-height: 1.06;
-      color: var(--text);
       margin-bottom: 20px;
     }
-    #cta p {
+    .cta-sub {
       font-size: 17px;
-      color: var(--text-2);
+      color: var(--muted);
       margin-bottom: 44px;
     }
     .btn-cta {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: var(--mint);
-      color: var(--text);
-      text-decoration: none;
-      font-size: 15px;
+      background: var(--accent);
+      color: #000;
+      font-size: 16px;
       font-weight: 700;
-      padding: 14px 36px;
+      font-family: inherit;
+      padding: 16px 44px;
       border-radius: 999px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      animation: glow-pulse 2.4s ease-in-out infinite;
       transition: opacity .15s, transform .15s;
     }
-    .btn-cta:hover { opacity: .85; transform: translateY(-2px); }
+    .btn-cta:hover {
+      opacity: .88;
+      transform: translateY(-2px);
+      animation: none;
+    }
     .cta-note {
       margin-top: 20px;
       font-size: 13px;
-      color: #bbb;
+      color: #444;
     }
 
-    /* ── FOOTER ── */
+    /* ─── FOOTER ─── */
     footer {
       border-top: 1px solid var(--border);
       padding: 28px 40px;
@@ -434,243 +462,270 @@
       align-items: center;
       justify-content: space-between;
       font-size: 13px;
-      color: #aaa;
+      color: #444;
     }
-    footer a { color: #aaa; text-decoration: none; transition: color .15s; }
-    footer a:hover { color: var(--text-2); }
 
-    /* ── SCROLL REVEAL ── */
+    /* ─── SCROLL REVEAL ─── */
     .reveal {
       opacity: 0;
       transform: translateY(28px);
-      transition: opacity .65s ease-out, transform .65s ease-out;
+      transition: opacity .7s ease-out, transform .7s ease-out;
     }
     .reveal.in { opacity: 1; transform: none; }
-    .reveal.delay-1 { transition-delay: .1s; }
-    .reveal.delay-2 { transition-delay: .2s; }
-    .reveal.delay-3 { transition-delay: .3s; }
-    .reveal.delay-4 { transition-delay: .4s; }
+    .reveal.d1 { transition-delay: .1s; }
+    .reveal.d2 { transition-delay: .2s; }
+    .reveal.d3 { transition-delay: .3s; }
 
-    /* ── RESPONSIVE ── */
+    /* ─── HERO HEADLINE STAGGER ─── */
+    @keyframes line-up {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .h1-line {
+      display: block;
+      opacity: 0;
+      animation: line-up .65s ease-out forwards;
+    }
+    .h1-line:nth-child(2) { animation-delay: .14s; }
+
+    /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
-      #hero h1 { font-size: 48px; letter-spacing: -1.5px; }
-      .section-title { font-size: 36px; }
-      #cta h2 { font-size: 40px; }
+      .hero-h1 { font-size: 52px; letter-spacing: -2px; }
+      .section-title { font-size: 38px; }
+      .cta-title { font-size: 42px; }
       .container { padding: 0 24px; }
       .nav { padding: 0 24px; }
       footer { padding: 24px; flex-direction: column; gap: 8px; text-align: center; }
-      .hero-logo { width: 160px; height: 160px; }
-      section { padding: 80px 0; }
+      .hero-logo { width: 180px; height: 180px; }
+      .section { padding: 80px 0; }
     }
   </style>
 </head>
 <body>
 
-<!-- ── NAV ── -->
+<!-- NAV -->
 <nav class="nav" id="nav">
   <a href="/" class="nav-logo">
-    <img src="logo.png" alt="สลิปบอกหมด">
-    สลิปบอกหมด
+    <img src="logo.png" alt="">สลิปบอกหมด
   </a>
   <div class="nav-links">
     <a href="#features" class="nav-link">ฟีเจอร์</a>
     <a href="#how-it-works" class="nav-link">วิธีใช้</a>
     <a href="#pricing" class="nav-link">ราคา</a>
   </div>
-  <a href="#" class="nav-cta">เพิ่มเพื่อน LINE</a>
+  <a href="#" class="nav-btn">เพิ่มเพื่อน LINE</a>
 </nav>
 
-<!-- ── HERO ── -->
-<section id="hero" style="position:relative;">
+<!-- HERO -->
+<section id="hero">
   <img src="logo.png" alt="สลิปบอกหมด" class="hero-logo">
-  <span class="hero-eyebrow">LINE Bot · ฟรี 100%</span>
-  <h1>
-    <span class="h1-line">รู้ว่าเงินหายไปไหน</span><br>
-    <span class="h1-line mint">แค่ส่งสลิป</span>
+  <h1 class="hero-h1">
+    <span class="h1-line">รู้ว่าเงินหายไปไหน</span>
+    <span class="h1-line accent">แค่ส่งสลิป</span>
   </h1>
-  <p>บันทึกค่าใช้จ่ายจากสลิปโอนเงินโดยอัตโนมัติ ไม่ต้องพิมพ์เอง ไม่ต้องลงแอปเพิ่ม</p>
+  <p class="hero-sub">ส่งสลิปให้บอต AI อ่านและบันทึกค่าใช้จ่ายอัตโนมัติ</p>
   <a href="#" class="btn-hero">เพิ่มเพื่อน LINE →</a>
-  <p class="hero-note">ใช้งานฟรี · ไม่ต้องสมัครสมาชิก · รองรับทุกแบงก์</p>
+  <p class="hero-badge">ใช้งานฟรี · ไม่ต้องสมัคร · รองรับทุกแบงก์</p>
   <div class="hero-scroll">↓</div>
 </section>
 
-<!-- ── FEATURES ── -->
-<section id="features">
+<!-- FEATURES -->
+<section id="features" class="section">
   <div class="container">
-    <div class="section-head reveal">
-      <span class="section-label">ฟีเจอร์</span>
-      <h2 class="section-title">ทำได้มากกว่า<br>แค่บันทึก</h2>
-      <p class="section-sub">ครอบคลุมทุก workflow การจัดการเงินที่คุณต้องการ ไม่ซับซ้อน</p>
-    </div>
+    <span class="section-label reveal">ฟีเจอร์</span>
+    <h2 class="section-title reveal">ทำได้มากกว่าแค่บันทึก</h2>
     <div class="features-grid">
-      <div class="feature-card reveal delay-1">
-        <span class="feature-num">01</span>
-        <h3>อ่านสลิปอัตโนมัติ</h3>
-        <p>AI วิเคราะห์รูปสลิปและดึงยอดเงิน ผู้รับ วันที่ ออกมาโดยไม่ต้องพิมพ์เอง รองรับทุกธนาคาร</p>
+      <div class="feature-item" data-delay="0">
+        <div class="feature-num">01</div>
+        <div class="feature-body">
+          <h3>AI อ่านสลิปอัตโนมัติ</h3>
+          <p>รองรับทุกธนาคาร อ่านแม่นยำภายใน 3 วินาที ไม่ต้องพิมพ์เองแม้แต่ตัวเดียว</p>
+        </div>
       </div>
-      <div class="feature-card reveal delay-2">
-        <span class="feature-num">02</span>
-        <h3>จัดหมวดหมู่ด้วย AI</h3>
-        <p>แยกประเภทรายจ่ายเป็นอาหาร การเดินทาง ช้อปปิ้ง และอีก 5 หมวดหมู่โดยอัตโนมัติ</p>
+      <div class="feature-item" data-delay="100">
+        <div class="feature-num">02</div>
+        <div class="feature-body">
+          <h3>จัดหมวดหมู่ด้วย AI</h3>
+          <p>แยกอาหาร เดินทาง ช้อปปิ้ง และอีก 5 หมวดหมู่อัตโนมัติ ไม่ต้องเลือกเอง</p>
+        </div>
       </div>
-      <div class="feature-card reveal delay-3">
-        <span class="feature-num">03</span>
-        <h3>งบประมาณและแจ้งเตือน</h3>
-        <p>ตั้งงบรายเดือนได้ ระบบแจ้งเตือนทันทีเมื่อใช้เงินเกิน 80% ของงบที่กำหนด</p>
+      <div class="feature-item" data-delay="200">
+        <div class="feature-num">03</div>
+        <div class="feature-body">
+          <h3>งบประมาณและแจ้งเตือน</h3>
+          <p>ตั้งงบรายเดือนได้ รับแจ้งเตือนทันทีเมื่อใช้เงินเกิน 80% ของงบที่กำหนด</p>
+        </div>
       </div>
-      <div class="feature-card reveal delay-4">
-        <span class="feature-num">04</span>
-        <h3>รายงานรายสัปดาห์</h3>
-        <p>บอตส่งสรุปค่าใช้จ่ายทุกวันอาทิตย์ รู้ว่าใช้ไปเท่าไหร่กับหมวดไหนบ้างในสัปดาห์</p>
+      <div class="feature-item" data-delay="300">
+        <div class="feature-num">04</div>
+        <div class="feature-body">
+          <h3>รายงานรายสัปดาห์</h3>
+          <p>สรุปค่าใช้จ่ายส่งให้ทุกวันอาทิตย์อัตโนมัติ รู้ว่าเงินไปกับหมวดไหนมากสุด</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── HOW IT WORKS ── -->
-<section id="how-it-works">
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="section">
   <div class="container">
-    <div class="section-head reveal">
-      <span class="section-label">วิธีเริ่มต้น</span>
-      <h2 class="section-title">สามขั้นตอน<br>ไม่มีขั้นตอนที่สี่</h2>
-      <p class="section-sub">ออกแบบให้ใช้งานได้ทันที ไม่ต้องอ่านคู่มือ</p>
-    </div>
-    <div class="steps-grid">
-      <div class="step-card reveal delay-1">
-        <span class="step-num">01</span>
+    <span class="section-label reveal">วิธีเริ่มต้น</span>
+    <h2 class="section-title reveal">3 ขั้นตอน เท่านั้น</h2>
+    <div class="steps-row">
+      <div class="step-item" data-step>
+        <img src="logo.png" alt="" class="step-icon">
         <h3>เพิ่มเพื่อน LINE</h3>
-        <p>กด Add Friend แล้ว scan QR Code ใช้งานได้ทันที ไม่ต้องกรอกข้อมูลเพิ่มเติม</p>
+        <p>Scan QR Code แล้วใช้ได้ทันที ไม่ต้องกรอกข้อมูลหรือสมัครสมาชิกใดๆ</p>
       </div>
-      <div class="step-card reveal delay-2">
-        <span class="step-num">02</span>
+      <div class="step-item" data-step>
+        <img src="logo.png" alt="" class="step-icon">
         <h3>ส่งรูปสลิป</h3>
-        <p>จ่ายเงินแล้วถ่ายหรือ screenshot สลิปโอนเงิน แล้วส่งเข้า chat ได้เลย</p>
+        <p>จ่ายเงินแล้ว screenshot สลิปโอนเงิน แล้วส่งเข้า chat LINE ได้เลย</p>
       </div>
-      <div class="step-card reveal delay-3">
-        <span class="step-num">03</span>
-        <h3>รู้ยอดทันที</h3>
-        <p>บอตบันทึกและตอบกลับภายในไม่กี่วินาที พร้อมยอดรวมและหมวดหมู่ประจำวัน</p>
+      <div class="step-item" data-step>
+        <img src="logo.png" alt="" class="step-icon">
+        <h3>รู้ทันที</h3>
+        <p>บอตอ่าน บันทึก และสรุปยอดให้ภายใน 3 วินาที พร้อมหมวดหมู่และยอดรวมวันนี้</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ── PRICING ── -->
-<section id="pricing">
+<!-- PRICING -->
+<section id="pricing" class="section">
   <div class="container">
-    <div class="section-head reveal">
-      <span class="section-label">ราคา</span>
-      <h2 class="section-title">เริ่มฟรี<br>อัปเกรดเมื่อต้องการ</h2>
-      <p class="section-sub">ไม่ต้องใช้บัตรเครดิต ไม่มีการ lock-in ทดลองได้เลย</p>
-    </div>
-    <div class="pricing-grid reveal">
+    <span class="section-label reveal">ราคา</span>
+    <h2 class="section-title reveal">เริ่มฟรี อัปเกรดเมื่อพร้อม</h2>
+    <div class="pricing-grid">
 
-      <div class="pricing-card">
+      <div class="pricing-card" data-price>
         <div class="plan-name">Free</div>
         <div class="plan-price">฿0</div>
         <div class="plan-period">ตลอดไป</div>
-        <span class="plan-badge-empty"></span>
+        <div style="height:28px;margin-bottom:28px;"></div>
         <div class="plan-divider"></div>
         <ul class="plan-features">
-          <li class="active"><span class="feat-check">✓</span>อ่านสลิป 20 ใบ/เดือน</li>
-          <li class="active"><span class="feat-check">✓</span>จัดหมวดหมู่อัตโนมัติ</li>
-          <li class="active"><span class="feat-check">✓</span>สรุปรายวัน/รายสัปดาห์</li>
-          <li><span class="feat-cross">–</span>ตั้งงบประมาณ</li>
-          <li><span class="feat-cross">–</span>แจ้งเตือนงบเกิน</li>
-          <li><span class="feat-cross">–</span>ส่งออกรายงาน CSV</li>
+          <li class="on"><span class="check">✓</span>อ่านสลิป 20 ใบ/เดือน</li>
+          <li class="on"><span class="check">✓</span>จัดหมวดหมู่อัตโนมัติ</li>
+          <li class="on"><span class="check">✓</span>สรุปรายวัน/รายสัปดาห์</li>
+          <li><span class="cross">–</span>ตั้งงบประมาณ</li>
+          <li><span class="cross">–</span>แจ้งเตือนงบเกิน</li>
+          <li><span class="cross">–</span>ส่งออก CSV</li>
         </ul>
-        <a href="#" class="btn-plan outline">เริ่มใช้งาน</a>
+        <a href="#" class="btn-plan ghost">เริ่มใช้งาน</a>
       </div>
 
-      <div class="pricing-card featured">
+      <div class="pricing-card" data-price>
         <div class="plan-name">Pro รายเดือน</div>
         <div class="plan-price">฿99</div>
         <div class="plan-period">ต่อเดือน</div>
-        <span class="plan-badge-empty"></span>
+        <div style="height:28px;margin-bottom:28px;"></div>
         <div class="plan-divider"></div>
         <ul class="plan-features">
-          <li class="active"><span class="feat-check">✓</span>อ่านสลิปไม่จำกัด</li>
-          <li class="active"><span class="feat-check">✓</span>จัดหมวดหมู่ด้วย AI แม่นยำขึ้น</li>
-          <li class="active"><span class="feat-check">✓</span>ตั้งงบประมาณรายเดือน</li>
-          <li class="active"><span class="feat-check">✓</span>แจ้งเตือนเมื่อใช้เงินเกิน 80%</li>
-          <li class="active"><span class="feat-check">✓</span>ส่งออกรายงาน CSV</li>
-          <li class="active"><span class="feat-check">✓</span>Priority Support</li>
+          <li class="on"><span class="check">✓</span>อ่านสลิปไม่จำกัด</li>
+          <li class="on"><span class="check">✓</span>ทุกอย่างใน Free</li>
+          <li class="on"><span class="check">✓</span>ตั้งงบประมาณรายเดือน</li>
+          <li class="on"><span class="check">✓</span>แจ้งเตือนเมื่อใช้เงินเกิน 80%</li>
+          <li class="on"><span class="check">✓</span>ส่งออกรายงาน CSV</li>
+          <li class="on"><span class="check">✓</span>Priority Support</li>
         </ul>
-        <a href="#" class="btn-plan filled">ทดลองฟรี 7 วัน</a>
+        <a href="#" class="btn-plan solid">ทดลองฟรี 7 วัน</a>
       </div>
 
-      <div class="pricing-card">
+      <div class="pricing-card featured" data-price>
         <div class="plan-name">Pro รายปี</div>
         <div class="plan-price">฿79</div>
-        <div class="plan-period">ต่อเดือน</div>
+        <div class="plan-period">ต่อเดือน · เรียกเก็บ ฿948/ปี</div>
         <span class="plan-badge">ประหยัด 20%</span>
         <div class="plan-divider"></div>
         <ul class="plan-features">
-          <li class="active"><span class="feat-check">✓</span>ทุกอย่างใน Free</li>
-          <li class="active"><span class="feat-check">✓</span>อ่านสลิปไม่จำกัด</li>
-          <li class="active"><span class="feat-check">✓</span>ตั้งงบประมาณรายเดือน</li>
-          <li class="active"><span class="feat-check">✓</span>แจ้งเตือนเมื่อใช้เงินเกิน 80%</li>
-          <li class="active"><span class="feat-check">✓</span>ส่งออกรายงาน CSV</li>
-          <li class="active"><span class="feat-check">✓</span>Priority Support</li>
+          <li class="on"><span class="check">✓</span>ทุกอย่างใน Pro</li>
+          <li class="on"><span class="check">✓</span>อ่านสลิปไม่จำกัด</li>
+          <li class="on"><span class="check">✓</span>ตั้งงบประมาณรายเดือน</li>
+          <li class="on"><span class="check">✓</span>แจ้งเตือนเมื่อใช้เงินเกิน 80%</li>
+          <li class="on"><span class="check">✓</span>ส่งออกรายงาน CSV</li>
+          <li class="on"><span class="check">✓</span>Priority Support</li>
         </ul>
-        <a href="#" class="btn-plan filled">เริ่มต้นรายปี</a>
+        <a href="#" class="btn-plan solid">เริ่มต้นรายปี</a>
       </div>
 
     </div>
   </div>
 </section>
 
-<!-- ── CTA ── -->
+<!-- CTA -->
 <section id="cta">
   <div class="container reveal">
-    <h2>เริ่มต้นได้เลย<br>ไม่มีค่าใช้จ่าย</h2>
-    <p>เพิ่มเพื่อนใน LINE แล้วส่งสลิปแรกได้เลย ใช้งานได้ทันที</p>
+    <h2 class="cta-title">หยุดสงสัย<br>เริ่มรู้ได้เลย</h2>
+    <p class="cta-sub">เพิ่มเพื่อน LINE ฟรี ไม่ต้องสมัคร ไม่มีโฆษณา</p>
     <a href="#" class="btn-cta">เพิ่มเพื่อน LINE →</a>
     <p class="cta-note">ใช้งานบน iOS และ Android · ไม่เก็บข้อมูลส่วนตัว</p>
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
+<!-- FOOTER -->
 <footer>
   <span>© 2026 สลิปบอกหมด</span>
-  <span>Built with Node.js · Supabase · LINE API</span>
+  <span style="color:#333;">Built with Node.js · Supabase · LINE API</span>
 </footer>
 
 <script>
-  /* NAV scroll */
+  /* Nav scroll */
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => {
     nav.classList.toggle('scrolled', window.scrollY > 20);
   }, { passive: true });
 
-  /* Hero headline stagger */
-  const lines = document.querySelectorAll('.h1-line');
-  lines.forEach((el, i) => {
-    el.style.cssText = `
-      display:block;opacity:0;transform:translateY(20px);
-      animation:fade-up-line .6s ease-out ${i * 0.15}s forwards;
-    `;
-  });
-  const style = document.createElement('style');
-  style.textContent = `
-    @keyframes fade-up-line {
-      from { opacity:0; transform:translateY(20px); }
-      to   { opacity:1; transform:none; }
-    }
-  `;
-  document.head.appendChild(style);
+  /* IntersectionObserver for .reveal */
+  const revObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); revObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
 
-  /* Scroll reveal */
-  const revealEls = document.querySelectorAll('.reveal');
-  const revObs = new IntersectionObserver((entries) => {
+  /* Feature items stagger */
+  const featObs = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        e.target.classList.add('in');
-        revObs.unobserve(e.target);
+        const delay = parseInt(e.target.dataset.delay || 0);
+        setTimeout(() => e.target.classList.add('in'), delay);
+        featObs.unobserve(e.target);
       }
     });
   }, { threshold: 0.1 });
-  revealEls.forEach(el => revObs.observe(el));
+  document.querySelectorAll('.feature-item').forEach(el => featObs.observe(el));
+
+  /* Steps stagger */
+  const stepObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const steps = e.target.querySelectorAll('[data-step]');
+        steps.forEach((s, i) => {
+          setTimeout(() => s.classList.add('in'), i * 120);
+        });
+        stepObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  const stepsRow = document.querySelector('.steps-row');
+  if (stepsRow) stepObs.observe(stepsRow);
+
+  /* Pricing cards stagger */
+  const priceObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const cards = e.target.querySelectorAll('[data-price]');
+        cards.forEach((c, i) => {
+          setTimeout(() => c.classList.add('in'), i * 120);
+        });
+        priceObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  const priceGrid = document.querySelector('.pricing-grid');
+  if (priceGrid) priceObs.observe(priceGrid);
 </script>
 </body>
 </html>
