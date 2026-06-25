@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>สลิปบอกหมด — รู้ว่าเงินหายไปไหน แค่ส่งสลิป</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-0:      #060a06;
+      --bg-1:      #0c120c;
+      --bg-card:   rgba(255,255,255,0.04);
+      --border:    rgba(255,255,255,0.08);
+      --green:     #06C755;
+      --green-dim: rgba(6,199,85,0.15);
+      --green-glow:rgba(6,199,85,0.45);
+      --text-1:    #f0f0f0;
+      --text-2:    rgba(255,255,255,0.55);
+      --text-3:    rgba(255,255,255,0.3);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans Thai', 'Inter', sans-serif;
+      background: var(--bg-0);
+      color: var(--text-1);
+      overflow-x: hidden;
+    }
+
+    /* ─── UTILITY ─── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    .tag {
+      display: inline-block;
+      background: var(--green-dim);
+      color: var(--green);
+      border: 1px solid rgba(6,199,85,0.3);
+      border-radius: 99px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .section-sub {
+      font-size: 17px;
+      color: var(--text-2);
+      max-width: 520px;
+      line-height: 1.7;
+    }
+
+    /* ─── SCROLL ANIMATIONS ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.from-left  { transform: translateX(-60px); }
+    .reveal.from-right { transform: translateX(60px); }
+    .reveal.visible    { opacity: 1; transform: translate(0); }
+    .reveal.delay-1 { transition-delay: .12s; }
+    .reveal.delay-2 { transition-delay: .24s; }
+    .reveal.delay-3 { transition-delay: .36s; }
+    .reveal.delay-4 { transition-delay: .48s; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(6,10,6,0.8);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo span { color: var(--text-1); }
+    .btn-nav {
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: 99px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-nav:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--green-glow); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 80px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(6,199,85,0.22) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 80%, rgba(6,199,85,0.08) 0%, transparent 60%),
+        linear-gradient(180deg, #060a06 0%, #091209 50%, #060a06 100%);
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(6,199,85,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6,199,85,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 80%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+    }
+    .hero-headline {
+      font-size: clamp(38px, 6vw, 72px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+    }
+    .hero-headline .accent { color: var(--green); }
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-2);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 500px;
+    }
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: 99px;
+      padding: 16px 32px;
+      font-size: 17px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform .2s, box-shadow .2s;
+      animation: glow-pulse 2.5s ease-in-out infinite;
+    }
+    .btn-primary:hover { transform: translateY(-3px); }
+    .btn-secondary {
+      color: var(--text-2);
+      font-size: 15px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+    .hero-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 48px;
+      color: var(--text-3);
+      font-size: 14px;
+    }
+    .hero-badge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: blink 2s ease-in-out infinite; }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+    @keyframes glow-pulse {
+      0%,100% { box-shadow: 0 0 20px var(--green-glow), 0 0 40px rgba(6,199,85,0.2); }
+      50%      { box-shadow: 0 0 32px var(--green-glow), 0 0 64px rgba(6,199,85,0.3); }
+    }
+
+    /* ─── SECTION BASE ─── */
+    section { padding: 120px 0; }
+    section:nth-child(even) { background: var(--bg-1); }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-header .section-sub { margin: 0 auto; }
+
+    /* ─── CHAT DEMO ─── */
+    #demo {
+      background: linear-gradient(180deg, var(--bg-0) 0%, #0a110a 50%, var(--bg-0) 100%);
+    }
+    .demo-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    @media(max-width:768px){ .demo-wrap { grid-template-columns: 1fr; } }
+    .demo-text .section-title { text-align: left; }
+    .demo-text .section-sub  { text-align: left; }
+    .demo-features {
+      list-style: none;
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .demo-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-2);
+      font-size: 15px;
+    }
+    .demo-features li::before {
+      content: '';
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--green-dim);
+      border: 1.5px solid var(--green);
+      flex-shrink: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%2306C755' d='M8 13.4L4.6 10l-1.4 1.4L8 16.2l9-9-1.4-1.4z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    /* Phone mockup */
+    .phone-wrap { display: flex; justify-content: center; }
+    .phone {
+      width: 300px;
+      height: 620px;
+      background: #141414;
+      border-radius: 44px;
+      border: 7px solid #252525;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.06),
+        0 60px 120px rgba(0,0,0,0.9),
+        0 0 80px rgba(6,199,85,0.08);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    /* notch */
+    .phone::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 120px; height: 28px;
+      background: #141414;
+      border-radius: 0 0 18px 18px;
+      z-index: 10;
+    }
+
+    .phone-status {
+      padding: 12px 20px 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-1);
+      padding-top: 16px;
+    }
+    .status-icons { display: flex; gap: 5px; align-items: center; }
+    .status-icons svg { width: 14px; height: 14px; fill: currentColor; }
+
+    .line-header {
+      background: #1a1a1a;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .line-back {
+      color: var(--green);
+      font-size: 22px;
+      font-weight: 300;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .line-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--green), #00a040);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; flex-shrink: 0;
+    }
+    .line-info .name  { font-size: 13px; font-weight: 600; }
+    .line-info .badge { font-size: 10px; color: var(--green); font-weight: 500; }
+    .line-menu { margin-left: auto; color: var(--text-2); font-size: 18px; }
+
+    .chat-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 12px;
+      background: #0e1a0e;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scrollbar-width: none;
+    }
+    .chat-area::-webkit-scrollbar { display: none; }
+
+    .chat-bubble {
+      max-width: 80%;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity .4s ease, transform .4s ease;
+    }
+    .chat-bubble.show { opacity: 1; transform: translateY(0); }
+    .chat-bubble.user { align-self: flex-end; }
+    .chat-bubble.bot  { align-self: flex-start; }
+
+    .bubble-inner {
+      border-radius: 18px;
+      padding: 10px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .user .bubble-inner {
+      background: var(--green);
+      color: #000;
+      border-bottom-right-radius: 4px;
+      font-weight: 500;
+    }
+    .bot .bubble-inner {
+      background: #2a2a2a;
+      color: var(--text-1);
+      border-bottom-left-radius: 4px;
+    }
+
+    /* Slip image bubble */
+    .slip-img {
+      width: 160px;
+      height: 100px;
+      background: linear-gradient(135deg, #1e2d1e, #112211);
+      border-radius: 12px;
+      border: 1px solid rgba(6,199,85,0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .slip-img::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        90deg,
+        transparent, transparent 10px,
+        rgba(6,199,85,0.03) 10px, rgba(6,199,85,0.03) 11px
+      );
+    }
+    .slip-img .slip-logo { font-size: 11px; font-weight: 700; color: var(--green); letter-spacing: 1px; }
+    .slip-img .slip-amt  { font-size: 22px; font-weight: 800; color: #fff; }
+    .slip-img .slip-sub  { font-size: 9px; color: var(--text-2); }
+
+    /* Typing dots */
+    .typing {
+      display: flex; gap: 5px; padding: 14px 16px;
+      background: #2a2a2a;
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+      width: fit-content;
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    .typing.show { opacity: 1; }
+    .typing span {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--text-2);
+      animation: bounce-dot 1.2s ease-in-out infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: .2s; }
+    .typing span:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce-dot {
+      0%,60%,100%{ transform: translateY(0); opacity:.4; }
+      30%        { transform: translateY(-6px); opacity:1; }
+    }
+
+    /* Summary card */
+    .summary-card {
+      background: linear-gradient(135deg, #1a2e1a, #0e1e0e);
+      border: 1px solid rgba(6,199,85,0.25);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font-size: 11px;
+      min-width: 180px;
+    }
+    .summary-card .sc-title { color: var(--green); font-weight: 700; font-size: 11px; margin-bottom: 8px; }
+    .summary-card .sc-row {
+      display: flex; justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: var(--text-2);
+    }
+    .summary-card .sc-row:last-child { border: none; }
+    .summary-card .sc-row .val { color: #fff; font-weight: 600; }
+    .summary-card .sc-total {
+      margin-top: 8px;
+      display: flex; justify-content: space-between;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .chat-input-bar {
+      background: #1a1a1a;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .chat-input {
+      flex: 1;
+      background: #2a2a2a;
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+    .chat-cam { font-size: 18px; }
+
+    /* ─── FEATURES ─── */
+    #features .section-sub { color: var(--text-2); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      transition: border-color .3s, transform .3s, box-shadow .3s;
+    }
+    .feature-card:hover {
+      border-color: rgba(6,199,85,0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.4), 0 0 32px rgba(6,199,85,0.06);
+    }
+    .feature-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: var(--green-dim);
+      border: 1px solid rgba(6,199,85,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .feature-card p  { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+
+    /* ─── HOW IT WORKS ─── */
+    #how { background: var(--bg-1); }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      position: relative;
+    }
+    @media(max-width:640px){ .steps{ grid-template-columns:1fr; } }
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 36px; left: calc(16.6% + 24px); right: calc(16.6% + 24px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--green), rgba(6,199,85,0.2));
+    }
+    @media(max-width:640px){ .steps::before{ display:none; } }
+    .step { text-align: center; }
+    .step-num {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: var(--green-dim);
+      border: 2px solid var(--green);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--green);
+      margin: 0 auto 20px;
+      box-shadow: 0 0 24px rgba(6,199,85,0.2);
+    }
+    .step h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .step p   { font-size: 14px; color: var(--text-2); line-height: 1.6; }
+    .step-icon { font-size: 32px; display: block; margin-bottom: 4px; }
+
+    /* ─── PRICING ─── */
+    #pricing {
+      background: linear-gradient(180deg, var(--bg-0) 0%, #0a110a 100%);
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    @media(max-width:580px){ .pricing-grid{ grid-template-columns:1fr; } }
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+    }
+    .pricing-card.pro {
+      border-color: rgba(6,199,85,0.4);
+      background: linear-gradient(135deg, rgba(6,199,85,0.07), rgba(6,199,85,0.02));
+      box-shadow: 0 0 48px rgba(6,199,85,0.1), inset 0 1px 0 rgba(6,199,85,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    .pricing-card.pro::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(6,199,85,0.15), transparent 70%);
+    }
+    .pro-badge {
+      display: inline-block;
+      background: var(--green);
+      color: #000;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 99px;
+      padding: 3px 12px;
+      margin-bottom: 16px;
+      letter-spacing: .5px;
+    }
+    .plan-name { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+    .plan-price {
+      font-size: 42px;
+      font-weight: 900;
+      line-height: 1;
+      margin: 16px 0;
+      color: var(--green);
+    }
+    .plan-price span { font-size: 16px; font-weight: 400; color: var(--text-2); }
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 24px 0 32px;
+    }
+    .plan-features li {
+      display: flex; align-items: center;
+      gap: 10px; font-size: 14px; color: var(--text-2);
+    }
+    .plan-features li.active { color: var(--text-1); }
+    .check { color: var(--green); font-size: 16px; flex-shrink: 0; }
+    .cross { color: var(--text-3); font-size: 16px; flex-shrink: 0; }
+    .btn-plan {
+      display: block; width: 100%;
+      padding: 14px;
+      border-radius: 99px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-plan.free {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text-1);
+    }
+    .btn-plan.free:hover { border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
+    .btn-plan.paid {
+      background: var(--green);
+      color: #000;
+    }
+    .btn-plan.paid:hover { transform: translateY(-2px); box-shadow: 0 12px 32px var(--green-glow); }
+
+    /* ─── CTA ─── */
+    #cta {
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(6,199,85,0.15), transparent 70%),
+        var(--bg-1);
+      text-align: center;
+      padding: 140px 0;
+    }
+    #cta .section-title { font-size: clamp(32px, 5vw, 56px); }
+    #cta .section-sub { margin: 16px auto 48px; }
+    .btn-cta-large {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: 99px;
+      padding: 20px 48px;
+      font-size: 20px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      animation: glow-pulse 2s ease-in-out infinite;
+      transition: transform .2s;
+    }
+    .btn-cta-large:hover { transform: translateY(-4px) scale(1.02); }
+    .cta-note {
+      margin-top: 20px;
+      color: var(--text-3);
+      font-size: 13px;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--bg-0);
+      border-top: 1px solid var(--border);
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">💚 <span>สลิปบอกหมด</span></div>
+  <a href="#" class="btn-nav">+ เพิ่มเพื่อน LINE</a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="container">
+    <div class="hero-content">
+      <span class="tag">🤖 AI อ่านสลิปอัตโนมัติ</span>
+      <h1 class="hero-headline">
+        รู้ว่าเงิน<br>
+        หายไปไหน<br>
+        <span class="accent">แค่ส่งสลิป</span>
+      </h1>
+      <p class="hero-sub">
+        ส่งสลิปโอนเงินให้บอต AI อ่านและจัดหมวดหมู่ให้อัตโนมัติ
+        รู้ยอดใช้จ่ายแบบเรียลไทม์ ไม่ต้องบันทึกเอง
+      </p>
+      <div class="hero-cta">
+        <a href="#" class="btn-primary">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.5 7.5h-2.25v1.5h2.25v1.5h-2.25v1.5h2.25V15H9V9h7.5v.5z"/></svg>
+          เพิ่มเพื่อน LINE ฟรี
+        </a>
+        <a href="#demo" class="btn-secondary">ดูตัวอย่าง ↓</a>
+      </div>
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        ฟรี ไม่ต้องลงทะเบียน · เริ่มใช้งานได้เลย
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── DEMO ─── -->
+<section id="demo">
+  <div class="container">
+    <div class="demo-wrap">
+
+      <div class="demo-text reveal">
+        <span class="tag">💬 ดูตัวอย่างจริง</span>
+        <h2 class="section-title">ง่ายแค่นี้เอง</h2>
+        <p class="section-sub">
+          ส่งรูปสลิปใน LINE แล้วบอตจะอ่าน บันทึก
+          และสรุปค่าใช้จ่ายให้คุณทันที
+        </p>
+        <ul class="demo-features">
+          <li>อ่านสลิป PromptPay ทุกแบงก์</li>
+          <li>จัดหมวดหมู่อัตโนมัติด้วย AI</li>
+          <li>แจ้งเตือนเมื่อใช้เงินเกิน 80% ของงบ</li>
+          <li>สรุปรายวัน / อาทิตย์ / เดือน</li>
+        </ul>
+      </div>
+
+      <div class="phone-wrap reveal delay-2">
+        <div class="phone" id="phone">
+
+          <!-- Status bar -->
+          <div class="phone-status">
+            <span>9:41</span>
+            <div class="status-icons">
+              <svg viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4zm7 3.5l6 3 .5-.3V18l-6-3-.5.3V9.5z"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+          </div>
+
+          <!-- LINE Header -->
+          <div class="line-header">
+            <div class="line-back">‹</div>
+            <div class="line-avatar">🤖</div>
+            <div class="line-info">
+              <div class="name">สลิปบอกหมด</div>
+              <div class="badge">Official Account</div>
+            </div>
+            <div class="line-menu">⋮</div>
+          </div>
+
+          <!-- Chat -->
+          <div class="chat-area" id="chatArea">
+
+            <!-- User: slip image -->
+            <div class="chat-bubble user" id="msg1">
+              <div class="slip-img">
+                <div class="slip-logo">PROMPTPAY</div>
+                <div class="slip-amt">฿85.00</div>
+                <div class="slip-sub">กาแฟมีเจ้าของ • 25 มิ.ย.</div>
+              </div>
+            </div>
+
+            <!-- Bot: typing -->
+            <div class="chat-bubble bot" id="typing">
+              <div class="typing" id="typingDots">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <!-- Bot: text reply -->
+            <div class="chat-bubble bot" id="msg2">
+              <div class="bubble-inner">
+                ✅ บันทึกแล้ว — กาแฟ ฿85<br>
+                วันนี้ใช้ไปรวม ฿340
+              </div>
+            </div>
+
+            <!-- Bot: summary card -->
+            <div class="chat-bubble bot" id="msg3">
+              <div class="summary-card">
+                <div class="sc-title">📊 สรุปวันนี้</div>
+                <div class="sc-row"><span>อาหาร/เครื่องดื่ม</span><span class="val">฿210</span></div>
+                <div class="sc-row"><span>การเดินทาง</span><span class="val">฿130</span></div>
+                <div class="sc-row"><span>อื่นๆ</span><span class="val">฿ 0</span></div>
+                <div class="sc-total"><span>รวมทั้งหมด</span><span>฿340</span></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Input bar -->
+          <div class="chat-input-bar">
+            <div class="chat-cam">📷</div>
+            <div class="chat-input">ส่งรูปสลิป...</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── FEATURES ─── -->
+<section id="features">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="tag">✨ ฟีเจอร์</span>
+      <h2 class="section-title">ครบ จบ ในที่เดียว</h2>
+      <p class="section-sub">ไม่ต้องลงแอปเพิ่ม ใช้ผ่าน LINE ที่มีอยู่แล้ว</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal delay-1">
+        <div class="feature-icon">🤖</div>
+        <h3>AI อ่านสลิปอัตโนมัติ</h3>
+        <p>Gemini Vision อ่านข้อมูลจากรูปสลิปแม่นยำ รองรับทุกธนาคาร</p>
+      </div>
+      <div class="feature-card reveal delay-2">
+        <div class="feature-icon">🗂️</div>
+        <h3>จัดหมวดหมู่อัจฉริยะ</h3>
+        <p>AI แยกประเภทค่าใช้จ่ายให้อัตโนมัติ อาหาร เดินทาง ช้อปปิ้ง และอีกเยอะ</p>
+      </div>
+      <div class="feature-card reveal delay-3">
+        <div class="feature-icon">🔔</div>
+        <h3>แจ้งเตือนงบเกิน</h3>
+        <p>ตั้งงบรายเดือนได้ บอตจะแจ้งเตือนเมื่อใช้เงินเกิน 80% ทันที</p>
+      </div>
+      <div class="feature-card reveal delay-4">
+        <div class="feature-icon">📈</div>
+        <h3>รายงานรายสัปดาห์</h3>
+        <p>ส่งสรุปค่าใช้จ่ายให้ทุกวันอาทิตย์ รู้ว่าใช้ไปเท่าไหร่และกับอะไร</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HOW IT WORKS ─── -->
+<section id="how">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="tag">🚀 วิธีใช้งาน</span>
+      <h2 class="section-title">3 ขั้นตอน เท่านั้น</h2>
+      <p class="section-sub">ไม่ต้องสมัคร ไม่ต้องตั้งค่า เริ่มได้เลย</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal delay-1">
+        <div class="step-num">1</div>
+        <span class="step-icon">📲</span>
+        <h3>เพิ่มเพื่อน LINE</h3>
+        <p>กด Add Friend แล้ว scan QR Code ใช้ได้ทันที ฟรี</p>
+      </div>
+      <div class="step reveal delay-2">
+        <div class="step-num">2</div>
+        <span class="step-icon">🧾</span>
+        <h3>ส่งรูปสลิป</h3>
+        <p>จ่ายเงินแล้ว screenshot สลิป ส่งเข้า LINE ได้เลย</p>
+      </div>
+      <div class="step reveal delay-3">
+        <div class="step-num">3</div>
+        <span class="step-icon">✅</span>
+        <h3>รู้ทันที</h3>
+        <p>บอตอ่านสลิป บันทึก และสรุปยอดวันนี้ให้ภายใน 3 วินาที</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PRICING ─── -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="tag">💰 ราคา</span>
+      <h2 class="section-title">เริ่มต้นฟรี อัปเกรดเมื่อพร้อม</h2>
+      <p class="section-sub">ไม่ต้องใส่บัตรเครดิต ทดลองใช้ได้เลย</p>
+    </div>
+    <div class="pricing-grid">
+
+      <div class="pricing-card reveal from-left">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">฿0 <span>/เดือน</span></div>
+        <ul class="plan-features">
+          <li class="active"><span class="check">✓</span> อ่านสลิปไม่จำกัด</li>
+          <li class="active"><span class="check">✓</span> จัดหมวดหมู่อัตโนมัติ</li>
+          <li class="active"><span class="check">✓</span> สรุปรายวัน / สัปดาห์</li>
+          <li><span class="cross">✕</span> ตั้งงบประมาณ</li>
+          <li><span class="cross">✕</span> แจ้งเตือนงบเกิน</li>
+          <li><span class="cross">✕</span> ส่งออกรายงาน CSV</li>
+        </ul>
+        <button class="btn-plan free">เริ่มใช้งานฟรี</button>
+      </div>
+
+      <div class="pricing-card pro reveal from-right">
+        <div class="pro-badge">⚡ แนะนำ</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">฿99 <span>/เดือน</span></div>
+        <ul class="plan-features">
+          <li class="active"><span class="check">✓</span> ทุกอย่างในแพ็ก Free</li>
+          <li class="active"><span class="check">✓</span> ตั้งงบประมาณรายเดือน</li>
+          <li class="active"><span class="check">✓</span> แจ้งเตือนงบเกิน 80%</li>
+          <li class="active"><span class="check">✓</span> ส่งออกรายงาน CSV</li>
+          <li class="active"><span class="check">✓</span> กราฟค่าใช้จ่ายรายเดือน</li>
+          <li class="active"><span class="check">✓</span> Priority Support</li>
+        </ul>
+        <button class="btn-plan paid">เริ่มทดลองใช้ 7 วัน</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ─── FINAL CTA ─── -->
+<section id="cta">
+  <div class="container">
+    <div class="reveal">
+      <span class="tag">🚀 พร้อมแล้ว?</span>
+      <h2 class="section-title">หยุดสงสัย เริ่มรู้ได้เลย</h2>
+      <p class="section-sub">
+        เพิ่มเพื่อน LINE ฟรี ไม่ต้องสมัคร ไม่มีโฆษณา<br>
+        เริ่มต้นได้ใน 30 วินาที
+      </p>
+      <a href="#" class="btn-cta-large">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
+        เพิ่มเพื่อน LINE ฟรีเลย
+      </a>
+      <p class="cta-note">ไม่ต้องใส่ข้อมูลส่วนตัว · ใช้ได้บน iOS และ Android</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 สลิปบอกหมด · Made with 💚 for คนไทย</p>
+</footer>
+
+<script>
+  /* ─── INTERSECTION OBSERVER: scroll reveal ─── */
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  /* ─── CHAT ANIMATION ─── */
+  let chatPlayed = false;
+  const phone = document.getElementById('phone');
+
+  const chatObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !chatPlayed) {
+        chatPlayed = true;
+        runChatAnimation();
+      }
+    });
+  }, { threshold: 0.4 });
+  chatObs.observe(phone);
+
+  function showBubble(id, delay) {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('show');
+    }, delay);
+  }
+
+  function runChatAnimation() {
+    const chatArea = document.getElementById('chatArea');
+    const typingDots = document.getElementById('typingDots');
+    const msg2 = document.getElementById('msg2');
+    const msg3 = document.getElementById('msg3');
+    const typing = document.getElementById('typing');
+
+    // 1. User slip appears
+    showBubble('msg1', 600);
+
+    // 2. Typing indicator
+    setTimeout(() => {
+      typing.classList.add('show');
+      typingDots.classList.add('show');
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }, 1500);
+
+    // 3. Hide typing, show bot reply
+    setTimeout(() => {
+      typingDots.classList.remove('show');
+      typing.style.display = 'none';
+      msg2.classList.add('show');
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }, 3200);
+
+    // 4. Show summary card
+    setTimeout(() => {
+      msg3.classList.add('show');
+      chatArea.scrollTop = chatArea.scrollHeight;
+    }, 4000);
+  }
+</script>
+</body>
+</html>
