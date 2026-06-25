@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const config = require('./config');
 const webhookRouter = require('./routes/webhook');
 const healthRouter = require('./routes/health');
@@ -6,6 +7,7 @@ require('./jobs/weeklyReport');
 
 const app = express();
 
+app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use('/webhook', webhookRouter);
 app.use('/health', express.json(), healthRouter);
 
