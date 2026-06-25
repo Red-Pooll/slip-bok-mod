@@ -583,6 +583,12 @@
       margin-bottom: 20px;
     }
     .pricing-card.yearly .plan-label { color: var(--mint); }
+    .plan-badge-row {
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
     .yearly-badge {
       display: inline-block;
       font-size: 11px;
@@ -592,9 +598,9 @@
       border: 1px solid var(--mint-border);
       border-radius: 99px;
       padding: 3px 10px;
-      margin-bottom: 12px;
     }
     .plan-billing {
+      min-height: 18px;
       font-size: 12px;
       color: var(--text-3);
       margin-top: 4px;
@@ -996,8 +1002,10 @@
 
       <div class="pricing-card">
         <div class="plan-label">Free</div>
+        <div class="plan-badge-row"></div>
         <div class="plan-price">฿0</div>
         <div class="plan-period">ตลอดไป</div>
+        <div class="plan-billing"></div>
         <ul class="plan-features">
           <li class="active"><span class="feat-check">✓</span>อ่านสลิป 20 ใบ/เดือน</li>
           <li class="active"><span class="feat-check">✓</span>จัดหมวดหมู่อัตโนมัติ</li>
@@ -1011,8 +1019,10 @@
 
       <div class="pricing-card">
         <div class="plan-label">Pro รายเดือน</div>
+        <div class="plan-badge-row"></div>
         <div class="plan-price">฿99</div>
         <div class="plan-period">ต่อเดือน</div>
+        <div class="plan-billing"></div>
         <ul class="plan-features">
           <li class="active"><span class="feat-check">✓</span>อ่านสลิปไม่จำกัด</li>
           <li class="active"><span class="feat-check">✓</span>จัดหมวดหมู่ด้วย AI แม่นยำขึ้น</li>
@@ -1027,7 +1037,7 @@
 
       <div class="pricing-card yearly">
         <div class="plan-label">Pro รายปี</div>
-        <span class="yearly-badge">ประหยัด 20%</span>
+        <div class="plan-badge-row"><span class="yearly-badge">ประหยัด 20%</span></div>
         <div class="plan-price">฿79</div>
         <div class="plan-period">ต่อเดือน</div>
         <div class="plan-billing">เรียกเก็บ ฿948/ปี</div>
