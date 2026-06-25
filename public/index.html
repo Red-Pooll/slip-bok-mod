@@ -784,14 +784,55 @@
     /* ── SCROLL REVEAL ── */
     .reveal {
       opacity: 0;
-      transform: translateY(24px);
-      transition: opacity .6s ease, transform .6s ease;
+      transform: translateY(30px);
+      transition: opacity .6s ease-out, transform .6s ease-out;
     }
     .reveal.in { opacity: 1; transform: none; }
     .reveal.delay-1 { transition-delay: .1s; }
     .reveal.delay-2 { transition-delay: .2s; }
     .reveal.delay-3 { transition-delay: .3s; }
     .reveal.delay-4 { transition-delay: .4s; }
+
+    /* ── HEADLINE STAGGER ── */
+    @keyframes fade-up-line {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: none; }
+    }
+    .h1-line {
+      display: block;
+      opacity: 0;
+      animation: fade-up-line .6s ease-out forwards;
+    }
+    .h1-line:nth-child(2) { animation-delay: .15s; }
+
+    /* ── FEATURE CARDS HOVER ── */
+    .feature-item {
+      transition: background .2s, transform .2s;
+    }
+    .feature-item:hover {
+      background: rgba(125,212,180,0.04);
+      transform: translateY(-4px);
+    }
+    .feature-item:hover .feature-icon { color: var(--mint); }
+
+    /* ── PRICING CARDS HOVER ── */
+    .pricing-card {
+      transition: transform .2s, box-shadow .2s;
+    }
+    .pricing-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 32px rgba(125,212,180,0.1);
+    }
+
+    /* ── CTA PULSE ── */
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(125,212,180,0); }
+      50%       { box-shadow: 0 0 20px 6px rgba(125,212,180,0.25); }
+    }
+    .btn-cta {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+    .btn-cta:hover { opacity: .85; animation: none; }
   </style>
 </head>
 <body>
@@ -817,7 +858,7 @@
 <section id="hero">
   <div class="hero-body">
     <img src="logo.png" alt="สลิปบอกหมด" class="hero-logo" id="hero-logo-static" />
-    <h1>รู้ว่าเงินหายไปไหน<br><em>แค่ส่งสลิป</em></h1>
+    <h1><span class="h1-line">รู้ว่าเงินหายไปไหน</span><span class="h1-line"><em>แค่ส่งสลิป</em></span></h1>
     <p>LINE Bot อ่านสลิปและจัดหมวดหมู่ให้อัตโนมัติ ฟรี</p>
     <a href="#" class="btn-cta">เพิ่มเพื่อน LINE →</a>
     <div class="hero-stats">
