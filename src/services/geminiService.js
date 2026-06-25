@@ -1,8 +1,8 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const config = require('../config');
 
-const genAI = new GoogleGenerativeAI(config.gemini.apiKey, { apiVersion: 'v1' });
-const model = genAI.getGenerativeModel({ model: config.gemini.model });
+const genAI = new GoogleGenerativeAI(config.gemini.apiKey);
+const model = genAI.getGenerativeModel({ model: config.gemini.model }, { apiVersion: 'v1' });
 
 const CATEGORIES = [
   'อาหาร/เครื่องดื่ม',

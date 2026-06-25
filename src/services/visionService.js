@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, { apiVersion: 'v1' });
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' }, { apiVersion: 'v1' });
 
 async function extractTextFromImage(imageBuffer) {
   const result = await model.generateContent([
