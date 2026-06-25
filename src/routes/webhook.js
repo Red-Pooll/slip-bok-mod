@@ -46,6 +46,16 @@ async function handleEvent(client, event) {
       await slipHandler.handleBudgetRequest(client, event, parseFloat(budgetMatch[1]));
       return;
     }
+
+    if (text === 'รีเซ็ต' || text === 'ล้างข้อมูล') {
+      await slipHandler.handleResetRequest(client, event);
+      return;
+    }
+
+    if (text === 'ลบงบ') {
+      await slipHandler.handleDeleteBudgetRequest(client, event);
+      return;
+    }
   }
 }
 

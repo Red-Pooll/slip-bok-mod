@@ -103,4 +103,28 @@ async function handleWeeklySummary(client, event) {
   await lineService.replyText(replyToken, formatWeeklySummary(summary));
 }
 
-module.exports = { handleSlipImage, handleSummaryRequest, handleHistoryRequest, handleBudgetRequest, handleWeeklySummary };
+async function handleResetRequest(client, event) {
+  const { replyToken, source } = event;
+  const userId = source.userId;
+
+  await supabaseService.deleteAllData(userId);
+  await lineService.replyText(replyToken, '🗑️ ล้างข้อมูลทั้งหมดแล้ว เริ่มต้นใหม่ได้เลย');
+}
+
+async function handleDeleteBudgetRequest(client, event) {
+  const { replyToken, source } = event;
+  const userId = source.userId;
+
+  await supabaseService.deleteBudget(userId);
+  await lineService.replyText(replyToken, '✅ ลบงบประมาณแล้ว');
+}
+
+module.exports = {
+  handleSlipImage,
+  handleSummaryRequest,
+  handleHistoryRequest,
+  handleBudgetRequest,
+  handleWeeklySummary,
+  handleResetRequest,
+  handleDeleteBudgetRequest,
+};

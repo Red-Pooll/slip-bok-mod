@@ -131,6 +131,25 @@ async function getBudget(userId) {
   return data?.monthly_amount ?? null;
 }
 
+async function deleteBudget(userId) {
+  const { error } = await supabase
+    .from('budgets')
+    .delete()
+    .eq('user_id', userId);
+
+  if (error) throw error;
+}
+
+async function deleteAllData(userId) {
+  const [t, b] = await Promise.all([
+    supabase.from('transactions').delete().eq('user_id', userId),
+    supabase.from('budgets').delete().eq('user_id', userId),
+  ]);
+
+  if (t.error) throw t.error;
+  if (b.error) throw b.error;
+}
+
 module.exports = {
   saveTransaction,
   getDailyTotal,
@@ -141,4 +160,6 @@ module.exports = {
   getAllUserIds,
   setBudget,
   getBudget,
+  deleteBudget,
+  deleteAllData,
 };
