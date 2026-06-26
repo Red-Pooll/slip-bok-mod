@@ -47,7 +47,7 @@ async function handleEvent(client, event) {
       return;
     }
 
-    if (text === 'แพลน' || text === 'plan') {
+    if (text === 'แพลน' || text === 'แผน' || text === 'plan') {
       await slipHandler.handlePlanRequest(client, event);
       return;
     }
