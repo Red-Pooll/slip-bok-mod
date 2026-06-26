@@ -48,7 +48,7 @@ async function handleEvent(client, event) {
       return;
     }
 
-    if (text === 'แพลน' || text === 'แผน' || text === 'plan') {
+    if (text === 'แผน' || text.toLowerCase() === 'plan') {
       await slipHandler.handlePlanRequest(client, event);
       return;
     }
