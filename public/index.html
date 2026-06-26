@@ -126,14 +126,6 @@
       from { transform: translateX(-50%) scale(1); }
       to   { transform: translateX(-50%) scale(1.1) translateY(-20px); }
     }
-    .hero-grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(125,212,180,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(125,212,180,.04) 1px, transparent 1px);
-      background-size: 64px 64px;
-      mask-image: radial-gradient(ellipse 82% 66% at 50% 48%, black 20%, transparent 100%);
-    }
     .hero-noise {
       position: absolute; inset: 0;
       opacity: .022;
@@ -1001,7 +993,6 @@
   <!-- layered background -->
   <div class="hero-bg">
     <div class="hero-aurora"></div>
-    <div class="hero-grid"></div>
     <div class="hero-noise"></div>
     <div class="hero-spotlight"></div>
   </div>
