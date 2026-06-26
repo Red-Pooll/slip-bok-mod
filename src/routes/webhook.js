@@ -30,6 +30,7 @@ async function handleEvent(client, event) {
 
   if (event.message.type === 'text') {
     const text = event.message.text.trim();
+    console.log('[debug] received text:', JSON.stringify(text));
 
     if (text === 'สรุป' || text === 'summary') {
       await slipHandler.handleSummaryRequest(client, event);
