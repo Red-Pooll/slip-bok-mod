@@ -13,13 +13,19 @@ function formatFullSummary(daily, weekly, monthly, budget) {
   return text;
 }
 
-function formatHistory(transactions) {
-  if (!transactions.length) return '📋 ยังไม่มีรายการ';
+function formatHistory(transactions, limited = false) {
+  if (!transactions.length) {
+    return limited
+      ? '📋 ไม่มีรายการใน 7 วันที่ผ่านมา\n\n🔒 ดูประวัติทั้งหมด → Pro ฿99/เดือน'
+      : '📋 ยังไม่มีรายการ';
+  }
   const lines = transactions.map((t, i) => {
     const date = new Date(t.slip_date).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
     return `${i + 1}. ${date} ${t.merchant} ฿${fmt(t.amount)} [${t.category}]`;
   });
-  return `📋 รายการล่าสุด 10 อัน\n\n${lines.join('\n')}`;
+  const header = limited ? '📋 รายการ 7 วันที่ผ่านมา' : '📋 รายการล่าสุด 10 อัน';
+  const footer = limited ? '\n\n🔒 ดูประวัติทั้งหมด → Pro ฿99/เดือน' : '';
+  return `${header}\n\n${lines.join('\n')}${footer}`;
 }
 
 function formatBudgetSet(amount) {
@@ -48,6 +54,25 @@ function formatParseError() {
   return '❌ ไม่สามารถอ่านสลิปได้ กรุณาส่งรูปสลิปที่ชัดเจนอีกครั้ง';
 }
 
+function formatSlipLimitReached() {
+  return 'คุณใช้ครบ 20 สลิปฟรีแล้วเดือนนี้ 🙏\nอัปเกรด Pro เพียง ฿99/เดือน เพื่อใช้ไม่จำกัด 🚀';
+}
+
+function formatProOnly() {
+  return '🔒 ฟีเจอร์นี้สำหรับ Pro เท่านั้น\nอัปเกรดเพียง ฿99/เดือน';
+}
+
+function formatPlanStatus({ plan, slipCount, slipLimit, proExpiresAt }) {
+  if (plan === 'pro') {
+    const expiry = proExpiresAt
+      ? new Date(proExpiresAt).toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })
+      : 'ไม่มีกำหนด';
+    return `⭐ แพลนปัจจุบัน: Pro\nใช้ได้ไม่จำกัด หมดอายุ ${expiry}`;
+  }
+  const remaining = Math.max(0, slipLimit - slipCount);
+  return `📋 แพลนปัจจุบัน: Free\nเดือนนี้ใช้ไป ${slipCount}/${slipLimit} สลิป\nเหลืออีก ${remaining} ใบ`;
+}
+
 module.exports = {
   formatSaveConfirmation,
   formatFullSummary,
@@ -56,4 +81,7 @@ module.exports = {
   formatBudgetAlert,
   formatWeeklySummary,
   formatParseError,
+  formatSlipLimitReached,
+  formatProOnly,
+  formatPlanStatus,
 };

@@ -11,11 +11,21 @@ const {
   formatBudgetAlert,
   formatWeeklySummary,
   formatParseError,
+  formatSlipLimitReached,
+  formatProOnly,
+  formatPlanStatus,
 } = require('../utils/formatMessage');
 
 async function handleSlipImage(client, event) {
   const { replyToken, source, message } = event;
   const userId = source.userId;
+
+  // Freemium: check plan and monthly quota
+  const subscription = await supabaseService.checkPlan(userId);
+  if (subscription.plan === 'free' && subscription.slipCount >= subscription.slipLimit) {
+    await lineService.replyText(replyToken, formatSlipLimitReached());
+    return;
+  }
 
   let imageBuffer;
   try {
@@ -52,10 +62,15 @@ async function handleSlipImage(client, event) {
     slipDate: parsed.slipDate,
   });
 
+  // Increment free-plan quota after successful save
+  if (subscription.plan === 'free') {
+    await supabaseService.incrementSlipCount(userId);
+  }
+
   const dailyTotal = await supabaseService.getDailyTotal(userId);
   await lineService.replyText(replyToken, formatSaveConfirmation(merchantShortName, parsed.amount, dailyTotal));
 
-  // Budget alert when usage hits 80%
+  // Budget alert (pro only — free users can't set budgets so this won't trigger)
   const budget = await supabaseService.getBudget(userId);
   if (budget) {
     const monthlyTotal = await supabaseService.getMonthlyTotal(userId);
@@ -83,13 +98,27 @@ async function handleHistoryRequest(client, event) {
   const { replyToken, source } = event;
   const userId = source.userId;
 
+  const { plan } = await supabaseService.checkPlan(userId);
+
+  if (plan === 'free') {
+    const transactions = await supabaseService.getRecentTransactionsByDays(userId, 7);
+    await lineService.replyText(replyToken, formatHistory(transactions, true));
+    return;
+  }
+
   const transactions = await supabaseService.getRecentTransactions(userId, 10);
-  await lineService.replyText(replyToken, formatHistory(transactions));
+  await lineService.replyText(replyToken, formatHistory(transactions, false));
 }
 
 async function handleBudgetRequest(client, event, amount) {
   const { replyToken, source } = event;
   const userId = source.userId;
+
+  const { plan } = await supabaseService.checkPlan(userId);
+  if (plan === 'free') {
+    await lineService.replyText(replyToken, formatProOnly());
+    return;
+  }
 
   await supabaseService.setBudget(userId, amount);
   await lineService.replyText(replyToken, formatBudgetSet(amount));
@@ -101,6 +130,14 @@ async function handleWeeklySummary(client, event) {
 
   const summary = await supabaseService.getWeeklySummary(userId);
   await lineService.replyText(replyToken, formatWeeklySummary(summary));
+}
+
+async function handlePlanRequest(client, event) {
+  const { replyToken, source } = event;
+  const userId = source.userId;
+
+  const subscription = await supabaseService.checkPlan(userId);
+  await lineService.replyText(replyToken, formatPlanStatus(subscription));
 }
 
 async function handleResetRequest(client, event) {
@@ -115,6 +152,12 @@ async function handleDeleteBudgetRequest(client, event) {
   const { replyToken, source } = event;
   const userId = source.userId;
 
+  const { plan } = await supabaseService.checkPlan(userId);
+  if (plan === 'free') {
+    await lineService.replyText(replyToken, formatProOnly());
+    return;
+  }
+
   await supabaseService.deleteBudget(userId);
   await lineService.replyText(replyToken, '✅ ลบงบประมาณแล้ว');
 }
@@ -125,6 +168,7 @@ module.exports = {
   handleHistoryRequest,
   handleBudgetRequest,
   handleWeeklySummary,
+  handlePlanRequest,
   handleResetRequest,
   handleDeleteBudgetRequest,
 };

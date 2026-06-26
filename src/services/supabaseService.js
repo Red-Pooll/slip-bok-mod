@@ -8,6 +8,8 @@ const supabase = createClient(config.supabase.url, config.supabase.serviceRoleKe
   },
 });
 
+const FREE_SLIP_LIMIT = 20;
+
 async function saveTransaction(userId, data) {
   const { error } = await supabase.from('transactions').insert({
     user_id: userId,
@@ -140,6 +142,98 @@ async function deleteBudget(userId) {
   if (error) throw error;
 }
 
+async function checkPlan(userId) {
+  const now = new Date();
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    .toISOString()
+    .split('T')[0];
+
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .select('plan, slip_count_this_month, month_reset, pro_expires_at')
+    .eq('user_id', userId)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error;
+
+  if (!data) {
+    await supabase.from('subscriptions').insert({
+      user_id: userId,
+      plan: 'free',
+      slip_count_this_month: 0,
+      month_reset: firstOfMonth,
+    });
+    return { plan: 'free', slipCount: 0, slipLimit: FREE_SLIP_LIMIT, proExpiresAt: null };
+  }
+
+  let slipCount = data.slip_count_this_month;
+
+  if (data.month_reset < firstOfMonth) {
+    slipCount = 0;
+    await supabase
+      .from('subscriptions')
+      .update({ slip_count_this_month: 0, month_reset: firstOfMonth, updated_at: now.toISOString() })
+      .eq('user_id', userId);
+  }
+
+  let plan = data.plan;
+  if (plan === 'pro' && data.pro_expires_at && new Date(data.pro_expires_at) < now) {
+    plan = 'free';
+    await supabase
+      .from('subscriptions')
+      .update({ plan: 'free', updated_at: now.toISOString() })
+      .eq('user_id', userId);
+  }
+
+  return { plan, slipCount, slipLimit: FREE_SLIP_LIMIT, proExpiresAt: data.pro_expires_at };
+}
+
+async function incrementSlipCount(userId) {
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .select('slip_count_this_month')
+    .eq('user_id', userId)
+    .single();
+  if (error) throw error;
+
+  const { error: ue } = await supabase
+    .from('subscriptions')
+    .update({
+      slip_count_this_month: (data.slip_count_this_month || 0) + 1,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('user_id', userId);
+  if (ue) throw ue;
+}
+
+async function getRecentTransactionsByDays(userId, days) {
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+  since.setHours(0, 0, 0, 0);
+
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('amount, merchant, category, slip_date')
+    .eq('user_id', userId)
+    .gte('slip_date', since.toISOString())
+    .order('slip_date', { ascending: false })
+    .limit(50);
+
+  if (error) throw error;
+  return data;
+}
+
+async function getProUserIds() {
+  const now = new Date().toISOString();
+  const { data, error } = await supabase
+    .from('subscriptions')
+    .select('user_id')
+    .eq('plan', 'pro')
+    .or(`pro_expires_at.is.null,pro_expires_at.gt.${now}`);
+  if (error) throw error;
+  return data.map((r) => r.user_id);
+}
+
 async function deleteAllData(userId) {
   const [t, b] = await Promise.all([
     supabase.from('transactions').delete().eq('user_id', userId),
@@ -157,9 +251,13 @@ module.exports = {
   getMonthlyTotal,
   getWeeklySummary,
   getRecentTransactions,
+  getRecentTransactionsByDays,
   getAllUserIds,
+  getProUserIds,
   setBudget,
   getBudget,
   deleteBudget,
   deleteAllData,
+  checkPlan,
+  incrementSlipCount,
 };

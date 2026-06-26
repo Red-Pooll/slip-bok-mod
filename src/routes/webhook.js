@@ -47,6 +47,11 @@ async function handleEvent(client, event) {
       return;
     }
 
+    if (text === 'แพลน' || text === 'plan') {
+      await slipHandler.handlePlanRequest(client, event);
+      return;
+    }
+
     if (text === 'รีเซ็ต' || text === 'ล้างข้อมูล') {
       await slipHandler.handleResetRequest(client, event);
       return;
