@@ -4,23 +4,23 @@ const geminiService = require('../services/geminiService');
 const supabaseService = require('../services/supabaseService');
 const { parseSlipText } = require('../utils/parseSlip');
 const {
-  formatSaveConfirmation,
-  formatFullSummary,
   formatHistory,
-  formatBudgetSet,
   formatBudgetAlert,
   formatWeeklySummary,
   formatParseError,
   formatSlipLimitReached,
   formatProOnly,
-  formatPlanStatus,
+  flexSaveConfirmation,
+  flexFullSummary,
+  flexPlanStatus,
+  flexBudgetSet,
 } = require('../utils/formatMessage');
 
 async function handleSlipImage(client, event) {
   const { replyToken, source, message } = event;
   const userId = source.userId;
 
-  // Freemium: check plan and monthly quota
+  // Freemium: check monthly quota
   const subscription = await supabaseService.checkPlan(userId);
   if (subscription.plan === 'free' && subscription.slipCount >= subscription.slipLimit) {
     await lineService.replyText(replyToken, formatSlipLimitReached());
@@ -62,21 +62,27 @@ async function handleSlipImage(client, event) {
     slipDate: parsed.slipDate,
   });
 
-  // Increment free-plan quota after successful save
   if (subscription.plan === 'free') {
     await supabaseService.incrementSlipCount(userId);
   }
 
-  const dailyTotal = await supabaseService.getDailyTotal(userId);
-  await lineService.replyText(replyToken, formatSaveConfirmation(merchantShortName, parsed.amount, dailyTotal));
+  const [dailyTotal, budget] = await Promise.all([
+    supabaseService.getDailyTotal(userId),
+    supabaseService.getBudget(userId),
+  ]);
 
-  // Budget alert (pro only — free users can't set budgets so this won't trigger)
-  const budget = await supabaseService.getBudget(userId);
-  if (budget) {
-    const monthlyTotal = await supabaseService.getMonthlyTotal(userId);
-    if (monthlyTotal / budget >= 0.8) {
-      await lineService.pushText(userId, formatBudgetAlert(monthlyTotal, budget));
-    }
+  let monthlyTotal = null;
+  if (budget) monthlyTotal = await supabaseService.getMonthlyTotal(userId);
+
+  await lineService.replyFlex(
+    replyToken,
+    `✅ บันทึก ${merchantShortName} ฿${parsed.amount}`,
+    flexSaveConfirmation(merchantShortName, parsed.amount, category, dailyTotal, budget, monthlyTotal)
+  );
+
+  // Budget alert push (pro only — free users can't set budgets)
+  if (budget && monthlyTotal / budget >= 0.8) {
+    await lineService.pushText(userId, formatBudgetAlert(monthlyTotal, budget));
   }
 }
 
@@ -87,11 +93,15 @@ async function handleSummaryRequest(client, event) {
   const [daily, weekly, monthly, budget] = await Promise.all([
     supabaseService.getDailyTotal(userId),
     supabaseService.getWeeklyTotal(userId),
-    supabaseService.getMonthlyTotal(userId),
+    supabaseService.getMonthlySummary(userId),
     supabaseService.getBudget(userId),
   ]);
 
-  await lineService.replyText(replyToken, formatFullSummary(daily, weekly, monthly, budget));
+  await lineService.replyFlex(
+    replyToken,
+    '📊 สรุปการใช้จ่าย',
+    flexFullSummary(daily, weekly, monthly.total, budget, monthly.byCategory)
+  );
 }
 
 async function handleHistoryRequest(client, event) {
@@ -121,7 +131,13 @@ async function handleBudgetRequest(client, event, amount) {
   }
 
   await supabaseService.setBudget(userId, amount);
-  await lineService.replyText(replyToken, formatBudgetSet(amount));
+  const monthlyTotal = await supabaseService.getMonthlyTotal(userId);
+
+  await lineService.replyFlex(
+    replyToken,
+    `💰 ตั้งงบ ฿${amount} สำเร็จ`,
+    flexBudgetSet(amount, monthlyTotal)
+  );
 }
 
 async function handleWeeklySummary(client, event) {
@@ -137,7 +153,11 @@ async function handlePlanRequest(client, event) {
   const userId = source.userId;
 
   const subscription = await supabaseService.checkPlan(userId);
-  await lineService.replyText(replyToken, formatPlanStatus(subscription));
+  await lineService.replyFlex(
+    replyToken,
+    `แพลนปัจจุบัน: ${subscription.plan.toUpperCase()}`,
+    flexPlanStatus(subscription)
+  );
 }
 
 async function handleResetRequest(client, event) {

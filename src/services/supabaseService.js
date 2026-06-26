@@ -91,6 +91,28 @@ async function getWeeklySummary(userId) {
   return { total, byCategory, count: data.length };
 }
 
+async function getMonthlySummary(userId) {
+  const start = new Date();
+  start.setDate(1);
+  start.setHours(0, 0, 0, 0);
+
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('amount, category')
+    .eq('user_id', userId)
+    .gte('slip_date', start.toISOString());
+
+  if (error) throw error;
+
+  const byCategory = {};
+  let total = 0;
+  for (const t of data) {
+    total += Number(t.amount);
+    byCategory[t.category] = (byCategory[t.category] || 0) + Number(t.amount);
+  }
+  return { total, byCategory, count: data.length };
+}
+
 async function getRecentTransactions(userId, limit = 10) {
   const { data, error } = await supabase
     .from('transactions')
@@ -250,6 +272,7 @@ module.exports = {
   getWeeklyTotal,
   getMonthlyTotal,
   getWeeklySummary,
+  getMonthlySummary,
   getRecentTransactions,
   getRecentTransactionsByDays,
   getAllUserIds,

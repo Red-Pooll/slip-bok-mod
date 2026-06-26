@@ -23,4 +23,8 @@ async function pushText(userId, text) {
   return client.pushMessage(userId, { type: 'text', text });
 }
 
-module.exports = { getImageBuffer, replyText, pushText };
+async function replyFlex(replyToken, altText, contents) {
+  return client.replyMessage(replyToken, { type: 'flex', altText, contents });
+}
+
+module.exports = { getImageBuffer, replyText, pushText, replyFlex };
