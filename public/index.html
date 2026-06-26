@@ -332,18 +332,6 @@
       transform: translateY(-2px);
     }
 
-    /* Stats row */
-    .hero-stats {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      animation: fade-up .65s ease .42s both;
-    }
-    .stat-item { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .stat-num { font-size: 22px; font-weight: 800; letter-spacing: -1px; color: var(--text); }
-    .stat-label { font-size: 12px; color: #555; letter-spacing: .02em; }
-    .stat-divider { width: 1px; height: 32px; background: #222; }
-
     /* Scroll hint */
     .hero-scroll {
       position: absolute;
@@ -983,8 +971,6 @@
       .hero-icon-wrap { width: 88px; height: 88px; }
       .hero-logo { width: 88px; height: 88px; }
       .hero-ctas { flex-direction: column; }
-      .hero-stats { gap: 20px; }
-      .stat-num { font-size: 19px; }
       .section-title { font-size: 38px; }
       .cta-title { font-size: 42px; }
       .container { padding: 0 24px; }
@@ -1046,24 +1032,6 @@
   <div class="hero-ctas">
     <a href="#" class="btn-hero">เพิ่มเพื่อน LINE <span>→</span></a>
     <a href="#chat-demo" class="btn-hero-ghost">ดูตัวอย่าง ↓</a>
-  </div>
-
-  <!-- social proof stats -->
-  <div class="hero-stats">
-    <div class="stat-item">
-      <span class="stat-num">5,000+</span>
-      <span class="stat-label">สลิปที่บันทึก</span>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <span class="stat-num">98%</span>
-      <span class="stat-label">ความแม่นยำ</span>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <span class="stat-num">3s</span>
-      <span class="stat-label">เฉลี่ยต่อสลิป</span>
-    </div>
   </div>
 
   <div class="hero-scroll">↓</div>
