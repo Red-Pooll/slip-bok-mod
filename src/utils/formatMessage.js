@@ -12,13 +12,6 @@ const LOCKED  = '#2e3e3a';
 
 // ── Primitives ─────────────────────────────────────────────────────────────────
 
-const BRAND_LABEL = {
-  type: 'box', layout: 'horizontal', backgroundColor: BG,
-  contents: [
-    { type: 'text', text: '💚 สลิปบอกหมด', color: MINT, size: 'xs', weight: 'bold' },
-  ],
-};
-
 function sep(margin = 'lg') {
   return { type: 'separator', margin, color: SEP_COL };
 }
@@ -54,7 +47,7 @@ function bubble({ headerContents, bodyContents, footerContents } = {}) {
     header: {
       type: 'box', layout: 'vertical',
       paddingAll: 'xl', paddingBottom: 'sm',
-      contents: [BRAND_LABEL, ...headerContents],
+      contents: headerContents,
     },
     body: {
       type: 'box', layout: 'vertical',
