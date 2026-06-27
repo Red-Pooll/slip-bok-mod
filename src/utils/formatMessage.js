@@ -19,7 +19,7 @@ function heroImage() {
     url: LOGO,
     size: 'xs',
     aspectRatio: '20:3',
-    aspectMode: 'cover',
+    aspectMode: 'fit',
   };
 }
 
