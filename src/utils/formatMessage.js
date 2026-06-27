@@ -9,19 +9,15 @@ const SUBTLE  = '#cccccc';
 const SEP_COL = '#1a2822';
 const DANGER  = '#ff6b6b';
 const LOCKED  = '#2e3e3a';
-const LOGO    = 'https://slip-bok-mod-production.up.railway.app/logo.png';
 
 // ── Primitives ─────────────────────────────────────────────────────────────────
 
-function heroImage() {
-  return {
-    type: 'image',
-    url: LOGO,
-    size: 'xs',
-    aspectRatio: '20:3',
-    aspectMode: 'fit',
-  };
-}
+const BRAND_LABEL = {
+  type: 'box', layout: 'horizontal', backgroundColor: BG,
+  contents: [
+    { type: 'text', text: '💚 สลิปบอกหมด', color: MINT, size: 'xs', weight: 'bold' },
+  ],
+};
 
 function sep(margin = 'lg') {
   return { type: 'separator', margin, color: SEP_COL };
@@ -50,9 +46,7 @@ function progressBar(pct, color = MINT, margin = 'sm') {
 function bubble({ headerContents, bodyContents, footerContents } = {}) {
   const obj = {
     type: 'bubble',
-    hero: heroImage(),
     styles: {
-      hero:   { backgroundColor: BG },
       header: { backgroundColor: BG },
       body:   { backgroundColor: BG },
       footer: { backgroundColor: BG },
@@ -60,7 +54,7 @@ function bubble({ headerContents, bodyContents, footerContents } = {}) {
     header: {
       type: 'box', layout: 'vertical',
       paddingAll: 'xl', paddingBottom: 'sm',
-      contents: headerContents,
+      contents: [BRAND_LABEL, ...headerContents],
     },
     body: {
       type: 'box', layout: 'vertical',
