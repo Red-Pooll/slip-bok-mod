@@ -27,4 +27,8 @@ async function replyFlex(replyToken, altText, contents) {
   return client.replyMessage(replyToken, { type: 'flex', altText, contents });
 }
 
-module.exports = { getImageBuffer, replyText, pushText, replyFlex };
+async function pushFlex(userId, altText, contents) {
+  return client.pushMessage(userId, { type: 'flex', altText, contents });
+}
+
+module.exports = { getImageBuffer, replyText, pushText, replyFlex, pushFlex };

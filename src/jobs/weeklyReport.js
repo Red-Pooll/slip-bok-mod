@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const supabaseService = require('../services/supabaseService');
 const lineService = require('../services/lineService');
-const { formatWeeklySummary } = require('../utils/formatMessage');
+const { flexWeeklySummary } = require('../utils/formatMessage');
 
 // Every Sunday at 20:00 Thailand time (UTC+7 = 13:00 UTC)
 cron.schedule('0 13 * * 0', async () => {
@@ -18,7 +18,7 @@ cron.schedule('0 13 * * 0', async () => {
       eligibleUserIds.map(async (userId) => {
         const summary = await supabaseService.getWeeklySummary(userId);
         if (summary.count === 0) return;
-        await lineService.pushText(userId, formatWeeklySummary(summary));
+        await lineService.pushFlex(userId, 'สรุป 7 วันที่ผ่านมา', flexWeeklySummary(summary));
       })
     );
     console.log(`[weeklyReport] Sent to ${eligibleUserIds.length} pro users`);
